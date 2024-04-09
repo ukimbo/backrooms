@@ -6,18 +6,30 @@ import utils.RandomUtils;
 import java.util.List;
 import java.util.Random;
 
+<<<<<<< HEAD
 public class World {
     // build your own world!
     public TETile[][] world;
     private String seed;
     private Random random;
 
+=======
+import tileengine.TETile;
+
+import java.util.List;
+
+public class World {
+    // build your own world!
+    private TETile[][] worldArray;
+    private final String SEED;
+>>>>>>> origin/main
     private int height;
     private int width;
     private int totalArea;
     private int usedArea;
     private List<Room> Rooms;
 
+<<<<<<< HEAD
     public World(int width, int height, String seed) {
         this.width = width;
         this.height = height;
@@ -91,6 +103,10 @@ public class World {
             world[xStart - 1][y] = Tileset.WALL;
             world[xStart + roomWidth][y] = Tileset.WALL;
         }
+=======
+    public World(String seed) {
+        SEED = seed;
+>>>>>>> origin/main
     }
 
     private class Room {
