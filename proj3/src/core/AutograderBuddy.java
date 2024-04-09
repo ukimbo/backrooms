@@ -18,9 +18,25 @@ public class AutograderBuddy {
      * @return the 2D TETile[][] representing the state of the world
      */
     public static TETile[][] getWorldFromInput(String input) {
+        int width = 80;
+        int height = 45;
 
-        throw new RuntimeException("Please fill out AutograderBuddy!");
+        World myWorld = new World(width, height, input);
 
+        return myWorld.world;
+    }
+    public static long parseSeed(String input) {
+        if (input.length() < 2 || input.charAt(0) != 'n' || !input.endsWith("s")) {
+            throw new IllegalArgumentException("Input must start with 'N' and end with 'S'.");
+        }
+        String seedStr = input.substring(1, input.length() - 1);
+        System.out.println(seedStr);
+
+        try {
+            return Long.parseLong(seedStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Seed must be a number within the int range.");
+        }
     }
 
 
