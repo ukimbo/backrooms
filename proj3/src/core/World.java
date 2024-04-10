@@ -11,8 +11,6 @@ import java.util.Random;
 
 public class World {
     // build your own world!
-    private TETile[][] worldArray;
-
     private int totalArea;
 //    private int usedArea;
     private List<Room> Rooms;
@@ -163,6 +161,15 @@ public class World {
         for (int y = yStart - 1; y <= yStart + floorHeight; y++) {
             world[xStart - 1][y] = Tileset.WALL;
             world[xStart + floorWidth][y] = Tileset.WALL;
+        }
+        if (isHallway) {
+            if (floorWidth ==  1) {
+                world[xStart][yStart - 1] = Tileset.FLOOR;
+                world[xStart][yStart + floorHeight] = Tileset.FLOOR;
+            } else if (floorHeight == 1) {
+                world[xStart - 1][yStart] = Tileset.FLOOR;
+                world[xStart + floorWidth][yStart] = Tileset.FLOOR;
+            }
         }
     }
     private class Room {
