@@ -14,7 +14,7 @@ public class World {
     private int totalArea;
 //    private int usedArea;
     private List<Room> Rooms;
-//    private WeightedQuickUnionUF roomConnections;
+    private WeightedQuickUnionUF roomConnections;
     public TETile[][] world;
     private String seed;
     private Random random;
@@ -188,7 +188,6 @@ public class World {
             length = floorWidth + 1;
             height = floorHeight + 1;
             area = length * width;
-//            usedArea += area;
         }
 
 
