@@ -5,6 +5,7 @@ import tileengine.TETile;
 import tileengine.Tileset;
 import utils.RandomUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -28,6 +29,7 @@ public class World {
         this.height = height;
         this.totalArea = this.width * this.height;
         this.usedArea = 0;
+        this.Rooms = new ArrayList<>();
         this.world = new TETile[width][height];
         System.out.println(seed);
         this.random = new Random(AutograderBuddy.parseSeed(seed));
@@ -42,6 +44,8 @@ public class World {
 
     public void randomSquare() {
         boolean placed = false;
+        int count = 0;
+        int roomNumber = RandomUtils.uniform(random, 19, 25);
         while (!placed) {
             int floorWidth = RandomUtils.uniform(random, 2, 15);
             int floorHeight = RandomUtils.uniform(random, 2, 15);
@@ -50,10 +54,10 @@ public class World {
 
             if (!overlaps(xStart, yStart, floorWidth, floorHeight)) {
                 drawRoom(xStart, yStart, floorWidth, floorHeight);
-                if ((double) usedArea / totalArea > 0.5) {
+                if (count == roomNumber) {
                     placed = true;
                 }
-
+                count += 1;
             }
 
         }
@@ -89,7 +93,7 @@ public class World {
         }
         for (int y = yStart - 1; y <= yStart + floorHeight; y++) {
             world[xStart - 1][y] = Tileset.WALL;
-            world[xStart + floorHeight][y] = Tileset.WALL;
+            world[xStart + floorWidth][y] = Tileset.WALL;
         }
     }
     private class Room {
