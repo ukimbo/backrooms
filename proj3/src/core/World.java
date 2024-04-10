@@ -120,21 +120,21 @@ public class World {
     //if ends both ends overlap but not the rest of the room
     private boolean endsOverlaps(int xStart, int yStart, int floorLength, boolean isVertical) {
         if (isVertical) {
-            if (//!world[xStart - 1][yStart - 1].equals(Tileset.NOTHING) &&
+            if (!world[xStart - 1][yStart - 1].equals(Tileset.NOTHING) &&
                     !world[xStart][yStart - 1].equals(Tileset.NOTHING) &&
-                    //!world[xStart + 1][yStart - 1].equals(Tileset.NOTHING) &&
-                    //!world[xStart - 1][yStart + floorLength].equals(Tileset.NOTHING) &&
-                    !world[xStart][yStart + floorLength].equals(Tileset.NOTHING)// &&
-                    /*!world[xStart + 1][yStart + floorLength].equals(Tileset.NOTHING)*/) {
+                    !world[xStart + 1][yStart - 1].equals(Tileset.NOTHING) &&
+                    !world[xStart - 1][yStart + floorLength].equals(Tileset.NOTHING) &&
+                    !world[xStart][yStart + floorLength].equals(Tileset.NOTHING) &&
+                    !world[xStart + 1][yStart + floorLength].equals(Tileset.NOTHING)) {
                 return true;
             }
         } else {
-            if (//!world[xStart - 1][yStart + 1].equals(Tileset.NOTHING) &&
+            if (!world[xStart - 1][yStart + 1].equals(Tileset.NOTHING) &&
                     !world[xStart - 1][yStart].equals(Tileset.NOTHING) &&
-                    //!world[xStart - 1][yStart - 1].equals(Tileset.NOTHING) &&
-                    //!world[xStart + floorLength][yStart + 1].equals(Tileset.NOTHING) &&
-                    !world[xStart + floorLength][yStart].equals(Tileset.NOTHING)// &&
-                    /*!world[xStart + floorLength][yStart - 1].equals(Tileset.NOTHING)*/) {
+                    !world[xStart - 1][yStart - 1].equals(Tileset.NOTHING) &&
+                    !world[xStart + floorLength][yStart + 1].equals(Tileset.NOTHING) &&
+                    !world[xStart + floorLength][yStart].equals(Tileset.NOTHING) &&
+                    !world[xStart + floorLength][yStart - 1].equals(Tileset.NOTHING)) {
                 return true;
             }
         }
