@@ -18,10 +18,8 @@ public class AutograderBuddy {
      * @return the 2D TETile[][] representing the state of the world
      */
     public static TETile[][] getWorldFromInput(String input) {
-        int width = 80;
-        int height = 45;
 
-        World myWorld = new World(width, height, input);
+        World myWorld = new World(80, 45, input);
 
         return myWorld.world;
     }
@@ -32,11 +30,9 @@ public class AutograderBuddy {
         String seedStr = input.substring(1, input.length() - 1);
         System.out.println(seedStr);
 
-        try {
-            return Long.parseLong(seedStr);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Seed must be a number within the int range.");
-        }
+
+        return Long.parseLong(seedStr);
+
     }
 
 
