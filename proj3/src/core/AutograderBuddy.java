@@ -32,11 +32,8 @@ public class AutograderBuddy {
         String seedStr = input.substring(1, input.length() - 1);
         System.out.println(seedStr);
 
-        try {
-            return Long.parseLong(seedStr);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Seed must be a number within the int range.");
-        }
+
+        return Long.parseLong(seedStr);
     }
 
 
