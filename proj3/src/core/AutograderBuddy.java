@@ -18,10 +18,8 @@ public class AutograderBuddy {
      * @return the 2D TETile[][] representing the state of the world
      */
     public static TETile[][] getWorldFromInput(String input) {
-        int width = 80;
-        int height = 45;
 
-        World myWorld = new World(width, height, input);
+        World myWorld = new World(80, 45, input);
 
         return myWorld.world;
     }
@@ -34,6 +32,7 @@ public class AutograderBuddy {
 
 
         return Long.parseLong(seedStr);
+
     }
 
 
