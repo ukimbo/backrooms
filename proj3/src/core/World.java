@@ -5,14 +5,12 @@ import tileengine.TETile;
 import tileengine.Tileset;
 import utils.RandomUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class World {
     // build your own world!
     private int totalArea;
-//    private int usedArea;
+    //    private int usedArea;
     private List<Room> Rooms;
     private WeightedQuickUnionUF roomConnections;
     public TETile[][] world;
@@ -38,7 +36,7 @@ public class World {
             }
         }
         this.randomSquare();
-        this.randomHalls();
+        this.placeHallsOnRooms();
     }
 
     public void randomSquare() {
@@ -46,12 +44,12 @@ public class World {
         int count = 0;
         //int roomNumber = RandomUtils.uniform(random, 19, 25);
         int roomNumber = 25;
+        int overflowCount = 0;
         while (!placed) {
             int floorWidth = RandomUtils.uniform(random, 2, 15);
             int floorHeight = RandomUtils.uniform(random, 2, 15);
             int xStart = RandomUtils.uniform(random, 1, width - floorWidth - 1);
             int yStart = RandomUtils.uniform(random, 1, height - floorHeight - 1);
-
             if (!overlaps(xStart, yStart, floorWidth, floorHeight)) {
                 drawRoom(xStart, yStart, floorWidth, floorHeight, false);
                 if (count == roomNumber) {
@@ -59,16 +57,91 @@ public class World {
                 }
                 count += 1;
             }
-
+            if (overflowCount == (roomNumber * roomNumber)) {
+                break;
+            }
+            overflowCount += 1;
         }
+    }
+
+    public void placeHallsOnRooms() {
+        int count = 0;
+        for (Room room: Rooms) {
+            boolean placed = false;
+            while (!placed) {
+                int floorLength = RandomUtils.uniform(random, 2, 30);
+                int hallwayHeight = 1;
+                boolean isVertical = RandomUtils.bernoulli(random);
+                if (isVertical) {
+                    int xStart = RandomUtils.uniform(random, 1, width - 1);
+                    int yStart = RandomUtils.uniform(random, 1, height - floorLength - 1);
+                    //Checks if it overlaps on anything besides the ends
+                    if (!overlaps(xStart, yStart + 1, hallwayHeight, floorLength - 2)) {
+                        //checks if specifically the ends of the hallways overlap
+                        if (endsOverlaps(xStart, yStart, floorLength, isVertical)) {
+                            drawRoom(xStart, yStart, hallwayHeight, floorLength,true);
+                            placed = true;
+                        }
+                    }
+                } else {
+                    int xStart = RandomUtils.uniform(random, 1, width - floorLength - 1);
+                    int yStart = RandomUtils.uniform(random, 1, height - 1);
+                    //Checks if it overlaps on anything besides the ends
+                    if (!overlaps(xStart + 1, yStart, floorLength - 2, hallwayHeight)) {
+                        //checks if specifically the ends of the hallways overlap
+                        if (endsOverlaps(xStart, yStart, floorLength, isVertical)) {
+                            drawRoom(xStart, yStart, floorLength, hallwayHeight,true);
+                            placed = true;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    private int[] randomPerimeterCoordinate(Room r, boolean vertical) {
+        int leftmostX = r.bottomLeftCords[0];
+        int rightmostX = r.topRightCords[0];
+        int bottomY = r.bottomLeftCords[1];
+        int topY = r.topRightCords[1];
+
+        int randomX;
+        int randomY;
+
+        if (vertical) {
+            // Choose top or bottom side
+            if (RandomUtils.bernoulli(random)) {
+                // Top side
+                randomX = RandomUtils.uniform(random, leftmostX, rightmostX);
+                randomY = topY;
+            } else {
+                // Bottom side
+                randomX = RandomUtils.uniform(random, leftmostX, rightmostX);
+                randomY = bottomY;
+            }
+        } else {
+            // Choose left or right side
+            if (RandomUtils.bernoulli(random)) {
+                // Left side
+                randomX = leftmostX;
+                randomY = RandomUtils.uniform(random, bottomY, topY);
+            } else {
+                // Right side
+                randomX = rightmostX;
+                randomY = RandomUtils.uniform(random, bottomY, topY);
+            }
+        }
+
+        return new int[]{randomX, randomY};
     }
 
     public void randomHalls() {
         boolean placed = false;
         int count = 0;
-        int roomNumber = RandomUtils.uniform(random, 19, 25);
+        int hallNumber = 20; //RandomUtils.uniform(random, 19, 25);
         while (!placed) {
-            int floorLength = RandomUtils.uniform(random, 5, 15);
+            int floorLength = RandomUtils.uniform(random, 2, 15);
             int hallwayHeight = 1;
             boolean isVertical = RandomUtils.bernoulli(random);
             if (isVertical) {
@@ -79,7 +152,7 @@ public class World {
                     //checks if specifically the ends of the hallways overlap
                     if (endsOverlaps(xStart, yStart, floorLength, isVertical)) {
                         drawRoom(xStart, yStart, hallwayHeight, floorLength,true);
-                        if (count == roomNumber) {
+                        if (count == hallNumber) {
                             placed = true;
                         }
                         count += 1;
@@ -93,7 +166,7 @@ public class World {
                     //checks if specifically the ends of the hallways overlap
                     if (endsOverlaps(xStart, yStart, floorLength, isVertical)) {
                         drawRoom(xStart, yStart, floorLength, hallwayHeight,true);
-                        if (count == roomNumber) {
+                        if (count == hallNumber) {
                             placed = true;
                         }
                         count += 1;
@@ -174,17 +247,17 @@ public class World {
     }
     private class Room {
         private int[] bottomLeftCords; //bottom Left Coordinate of the Walls
-        private int[] topLeftCords; //top Left Coordinate of the Walls
+        private int[] topRightCords; //top Right Coordinate of the Walls
         private int length;
         private int height;
         private int area;
         public Room(int xStart, int yStart, int floorWidth, int floorHeight) {
             bottomLeftCords = new int[2];
-            topLeftCords = new int[2];
+            topRightCords = new int[2];
             bottomLeftCords[0] = xStart - 1;
             bottomLeftCords[1] = yStart - 1;
-            topLeftCords[0] = xStart + floorWidth;
-            topLeftCords[1] = yStart + floorHeight;
+            topRightCords[0] = xStart + floorWidth;
+            topRightCords[1] = yStart + floorHeight;
             length = floorWidth + 1;
             height = floorHeight + 1;
             area = length * width;
