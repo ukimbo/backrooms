@@ -21,7 +21,7 @@ public class AutograderBuddy {
 
         World myWorld = new World(80, 45, input);
 
-        return myWorld.world;
+        return myWorld.getWorld();
     }
     public static long parseSeed(String input) {
         if (input.length() < 2 || input.charAt(0) != 'n' || !input.endsWith("s")) {

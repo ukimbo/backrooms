@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class World {
     // build your own world!
-    public TETile[][] world;
+    private TETile[][] world;
     private List<Room> Rooms;
     private Map<Integer, Room> roomGridPositionMap;
     private String seed;
@@ -33,6 +33,10 @@ public class World {
         }
         this.randomSquare();
         this.placeHalls();
+    }
+
+    public TETile[][] getWorld() {
+        return world;
     }
 
 
@@ -188,14 +192,6 @@ public class World {
         }
 
     }
-//    private int gridToInteger(int x, int y) {
-//        return (screenWidth * y) + x;
-//    }
-//    private int[] integerToGrid(int value) {
-//        int x = value % screenWidth;
-//        int y = value / screenWidth;
-//        return new int[]{x, y};
-//    }
 }
 
 

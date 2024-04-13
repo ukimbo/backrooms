@@ -13,6 +13,6 @@ public class Main {
 
         World myWorld = new World(width, height, "n1234567890123456789s");
 
-        ter.renderFrame(myWorld.world);
+        ter.renderFrame(myWorld.getWorld());
     }
 }
