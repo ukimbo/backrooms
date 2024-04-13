@@ -1,0 +1,162 @@
+package core;
+
+import tileengine.TETile;
+import tileengine.Tileset;
+import utils.RandomUtils;
+
+import java.util.*;
+
+public class World2 {
+    // build your own world!
+    public TETile[][] world;
+    private List<Room> Rooms;
+    private Map<Integer, Room> roomGridPositionMap;
+    private String seed;
+    private Random random;
+    private int screenWidth;
+    private int screenHeight;
+    public World2(int screenWidth, int screenHeight, String seed) {
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+        this.Rooms = new ArrayList<>();
+        this.world = new TETile[screenWidth][screenHeight];
+        System.out.println(seed);
+        this.random = new Random(AutograderBuddy.parseSeed(seed));
+        System.out.println(random);
+        for (int x = 0; x < screenWidth; x++) {
+            for (int y = 0; y < screenHeight; y++) {
+                world[x][y] = Tileset.NOTHING;
+            }
+        }
+        this.randomSquare();
+        this.placeHalls();
+    }
+
+
+    public void randomSquare() {
+        boolean placed = false;
+        int count = 0;
+        //int roomNumber = RandomUtils.uniform(random, 10, 25);
+        int roomNumber = 25;
+        int overflowCount = 0;
+        while (!placed) {
+            int roomWidth = RandomUtils.uniform(random, 4, 17);
+            int roomHeight = RandomUtils.uniform(random, 4, 17);
+            int xStart = RandomUtils.uniform(random, 1, screenWidth - roomWidth - 1);
+            int yStart = RandomUtils.uniform(random, 1, screenHeight - roomHeight - 1);
+            Room r = new Room(xStart, yStart, roomWidth, roomHeight);
+            if (!r.overlaps()) {
+                r.drawRoom();
+                if (count == roomNumber) {
+                    placed = true;
+                }
+                count += 1;
+            }
+            if (overflowCount == (roomNumber * roomNumber)) {
+                break;
+            }
+            overflowCount += 1;
+        }
+    }
+
+    public void placeHalls() {
+        Rooms.get(0).connectRooms(Rooms.get(1));
+    }
+
+    private class Room {
+        private int leftX;
+        private int rightX;
+        private int topY;
+        private int bottomY;
+        private int centerX;
+        private int centerY;
+        private int length;
+        private int height;
+        private boolean visited;
+        public Room(int xStart, int yStart, int length, int height) {
+            leftX = xStart;
+            rightX = xStart + length - 1;
+            bottomY = yStart;
+            topY = yStart + height - 1;
+            centerX = (rightX + leftX) / 2;
+            centerY = (topY + bottomY) / 2;
+            visited = false;
+            this.length = length;
+            this.height = height;
+            if (!this.overlaps()) {
+                Rooms.add(this);
+            }
+        }
+
+        private void drawRoom() {
+            //Floors
+            for (int x = leftX + 1; x < rightX; x++) {
+                for (int y = bottomY + 1; y < topY; y++) {
+                    world[x][y] = Tileset.FLOOR;
+                }
+            }
+            //Walls
+            for (int x = leftX; x <= rightX; x++) {
+                world[x][bottomY] = Tileset.WALL;
+                world[x][topY] = Tileset.WALL;
+            }
+            for (int y = bottomY; y <= topY; y++) {
+                world[leftX][y] = Tileset.WALL;
+                world[rightX][y] = Tileset.WALL;
+            }
+        }
+        private boolean overlaps() {
+            for (int x = leftX; x <= rightX; x++) {
+                for (int y = bottomY; y <= topY; y++) {
+                    if (!world[x][y].equals(Tileset.NOTHING)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+
+        private void connectRooms(Room otherRoom) {
+            drawHorizontalHallway(this.centerX, otherRoom.centerX, centerY);
+           drawVerticalHallway(this.centerY, otherRoom.centerY, otherRoom.centerX);
+        }
+
+        private void drawHorizontalHallway(int xStart, int xEnd, int yStart) {
+            for (int x = xStart; x < xEnd ; x++) {
+                world[x][yStart] = Tileset.FLOOR;
+                if (world[x][yStart - 1].equals(Tileset.NOTHING)) {
+                    world[x][yStart - 1] = Tileset.WALL;
+                }
+                if (world[x][yStart + 1].equals(Tileset.NOTHING)) {
+                    world[x][yStart + 1] = Tileset.WALL;
+                }
+            }
+        }
+
+        private void drawVerticalHallway(int yStart, int yEnd, int xStart) {
+            for (int y = yStart; y < yEnd; y++) {
+                world[xStart][y] = Tileset.FLOOR;
+                if (world[xStart - 1][y].equals(Tileset.NOTHING)) {
+                    world[xStart - 1][y] = Tileset.WALL;
+
+                }
+                if (world[xStart + 1][y].equals(Tileset.NOTHING)) {
+                    world[xStart + 1][y] = Tileset.WALL;
+                }
+
+            }
+        }
+
+    }
+//    private int gridToInteger(int x, int y) {
+//        return (screenWidth * y) + x;
+//    }
+//    private int[] integerToGrid(int value) {
+//        int x = value % screenWidth;
+//        int y = value / screenWidth;
+//        return new int[]{x, y};
+//    }
+}
+
+

@@ -9,10 +9,7 @@ import java.util.*;
 
 public class World {
     // build your own world!
-    private int totalArea;
-    //    private int usedArea;
     private List<Room> Rooms;
-    private WeightedQuickUnionUF roomConnections;
     public TETile[][] world;
     private String seed;
     private Random random;
@@ -23,8 +20,6 @@ public class World {
     public World(int width, int height, String seed) {
         this.width = width;
         this.height = height;
-        this.totalArea = this.width * this.height;
-//        this.usedArea = 0;
         this.Rooms = new ArrayList<>();
         this.world = new TETile[width][height];
         System.out.println(seed);
@@ -42,7 +37,7 @@ public class World {
     public void randomSquare() {
         boolean placed = false;
         int count = 0;
-        //int roomNumber = RandomUtils.uniform(random, 19, 25);
+        //int roomNumber = RandomUtils.uniform(random, 10, 25);
         int roomNumber = 25;
         int overflowCount = 0;
         while (!placed) {
