@@ -60,7 +60,12 @@ public class World2 {
     }
 
     public void placeHalls() {
-        Rooms.get(0).connectRooms(Rooms.get(1));
+        for (int i = 0; i < Rooms.size() - 1; i++) {
+            Room sourceRoom = Rooms.get(i);
+            Room destinationRoom = Rooms.get(i + 1);
+            sourceRoom.connectRoomsRandom(destinationRoom);
+
+        }
     }
 
     private class Room {
@@ -70,6 +75,8 @@ public class World2 {
         private int bottomY;
         private int centerX;
         private int centerY;
+        private int randomX;
+        private int randomY;
         private int length;
         private int height;
         private boolean visited;
@@ -115,13 +122,23 @@ public class World2 {
             }
             return false;
         }
-
-
-        private void connectRooms(Room otherRoom) {
-            drawHorizontalHallway(this.centerX, otherRoom.centerX, centerY);
-           drawVerticalHallway(this.centerY, otherRoom.centerY, otherRoom.centerX);
+        private void connectRoomsRandom(Room otherRoom) {
+            this.randomX = RandomUtils.uniform(random, this.leftX + 1, this.rightX - 1);
+            this.randomY = RandomUtils.uniform(random, this.bottomY + 1, this.topY - 1);
+            otherRoom.randomX = RandomUtils.uniform(random, otherRoom.leftX + 1, otherRoom.rightX - 1);
+            otherRoom.randomY = RandomUtils.uniform(random, otherRoom.bottomY + 1, otherRoom.topY - 1);
+            drawHorizontalHallway(this.randomX, otherRoom.randomX, this.randomY);
+            drawVerticalHallway(this.randomY, otherRoom.randomY, otherRoom.randomX);
         }
-
+        private void connectRoomsCenter(Room otherRoom) {
+            drawHorizontalHallway(this.centerX, otherRoom.centerX, centerY);
+            drawVerticalHallway(this.centerY, otherRoom.centerY, otherRoom.centerX);
+        }
+        private void drawLShapeHallway(int xStart, int xEnd, int yStart, int yEnd) {
+            drawHorizontalHallway(xStart, xEnd, yStart);
+            drawVerticalHallway(yStart, yEnd, xStart);
+            drawCorner();
+        }
         private void drawHorizontalHallway(int xStart, int xEnd, int yStart) {
             for (int x = xStart; x < xEnd ; x++) {
                 world[x][yStart] = Tileset.FLOOR;
@@ -146,6 +163,9 @@ public class World2 {
                 }
 
             }
+        }
+        private void drawCorner() {
+
         }
 
     }
