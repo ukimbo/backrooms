@@ -12,7 +12,7 @@ import java.util.Random;
 public class World {
     // build your own world!
     private TETile[][] world;
-    private List<Room> Rooms;
+    private List<Room> rooms;
     private Map<Integer, Room> roomGridPositionMap;
     private String seed;
     private Random random;
@@ -21,7 +21,7 @@ public class World {
     public World(int screenWidth, int screenHeight, String seed) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.Rooms = new ArrayList<>();
+        this.rooms = new ArrayList<>();
         this.world = new TETile[screenWidth][screenHeight];
         System.out.println(seed);
         this.random = new Random(AutograderBuddy.parseSeed(seed));
@@ -67,9 +67,9 @@ public class World {
     }
 
     public void placeHalls() {
-        for (int i = 0; i < Rooms.size() - 1; i++) {
-            Room sourceRoom = Rooms.get(i);
-            Room destinationRoom = Rooms.get(i + 1);
+        for (int i = 0; i < rooms.size() - 1; i++) {
+            Room sourceRoom = rooms.get(i);
+            Room destinationRoom = rooms.get(i + 1);
             sourceRoom.connectRoomsRandom(destinationRoom);
         }
     }
@@ -95,7 +95,7 @@ public class World {
             this.length = length;
             this.height = height;
             if (!this.overlaps()) {
-                Rooms.add(this);
+                rooms.add(this);
             }
         }
 
@@ -136,7 +136,7 @@ public class World {
             } else if (this.randomX > otherRoom.leftX && this.randomX < otherRoom.rightX) {
                 drawVerticalHallway(this.randomY, otherRoom.randomY, otherRoom.randomX);
             } else {
-               drawLShapeHallway(this.randomX, otherRoom.randomX, this.randomY, otherRoom.centerY);
+                drawLShapeHallway(this.randomX, otherRoom.randomX, this.randomY, otherRoom.centerY);
             }
         }
         private void drawLShapeHallway(int xStart, int xEnd, int yStart, int yEnd) {
@@ -153,7 +153,7 @@ public class World {
                 xOrigin = xStart;
                 xDestination = xEnd;
             }
-            for (int x = xOrigin; x <= xDestination ; x++) {
+            for (int x = xOrigin; x <= xDestination; x++) {
                 world[x][yStart] = Tileset.FLOOR;
                 if (world[x][yStart - 1].equals(Tileset.NOTHING)) {
                     world[x][yStart - 1] = Tileset.WALL;
