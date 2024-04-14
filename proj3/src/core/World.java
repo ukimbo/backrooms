@@ -211,7 +211,6 @@ public class World {
     private int gridToInteger(int x, int y) {
         return x + (y * screenWidth);
     }
-
 }
 
 
