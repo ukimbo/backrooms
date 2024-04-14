@@ -11,7 +11,7 @@ public class Main {
         TERenderer ter = new TERenderer();
         ter.initialize(width, height);
 
-        World myWorld = new World(width, height, "n1234567890123456789s");
+        World myWorld = new World(width, height, "n123456789012345678s");
 
         ter.renderFrame(myWorld.world);
     }
