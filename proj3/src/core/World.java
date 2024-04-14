@@ -139,7 +139,7 @@ public class World {
             roomConnections.union(this.id, otherRoom.id);
             if (this.randomY > otherRoom.bottomY && this.randomY < otherRoom.topY) {
                 drawHorizontalHallway(this.randomX, otherRoom.randomX, this.randomY);
-            } else if (this.randomX > otherRoom.leftX && this.randomX < otherRoom.rightX) {
+            } else if (this.randomX < otherRoom.leftX && this.randomX > otherRoom.rightX) {
                 drawVerticalHallway(this.randomY, otherRoom.randomY, otherRoom.randomX);
             } else {
                 drawLShapeHallway(this.randomX, otherRoom.randomX, this.randomY, otherRoom.centerY);
