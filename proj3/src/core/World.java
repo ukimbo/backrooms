@@ -66,13 +66,14 @@ public class World {
     }
 
     public void placeHalls() {
-        for (int i = 0; i < rooms.size() - 1; i++) {
-            if (roomConnections.find(rooms.get(i).id) == 0) {
-                continue;
+        int lastConnected = 0;
+        for (int i = 0; i <= rooms.size() - 1; i++) {
+            if (!roomConnections.connected(0, rooms.get(i).id)) {
+                Room sourceRoom = rooms.get(lastConnected);
+                Room destinationRoom = rooms.get(i);
+                sourceRoom.connectRoomsRandom(destinationRoom);
+                lastConnected = i;
             }
-            Room sourceRoom = rooms.get(i);
-            Room destinationRoom = rooms.get(i + 1);
-            sourceRoom.connectRoomsRandom(destinationRoom);
         }
     }
 
@@ -114,14 +115,10 @@ public class World {
             for (int x = leftX; x <= rightX; x++) {
                 world[x][bottomY] = Tileset.WALL;
                 world[x][topY] = Tileset.WALL;
-                roomGridPositionMap.put(gridToInteger(x, bottomY), this);
-                roomGridPositionMap.put(gridToInteger(x, topY), this);
             }
             for (int y = bottomY; y <= topY; y++) {
                 world[leftX][y] = Tileset.WALL;
                 world[rightX][y] = Tileset.WALL;
-                roomGridPositionMap.put(gridToInteger(leftX, y), this);
-                roomGridPositionMap.put(gridToInteger(rightX, y), this);
             }
         }
         private boolean overlaps() {
@@ -139,6 +136,7 @@ public class World {
             this.randomY = RandomUtils.uniform(random, this.bottomY + 1, this.topY - 1);
             otherRoom.randomX = RandomUtils.uniform(random, otherRoom.leftX + 1, otherRoom.rightX - 1);
             otherRoom.randomY = RandomUtils.uniform(random, otherRoom.bottomY + 1, otherRoom.topY - 1);
+            roomConnections.union(this.id, otherRoom.id);
             if (this.randomY > otherRoom.bottomY && this.randomY < otherRoom.topY) {
                 drawHorizontalHallway(this.randomX, otherRoom.randomX, this.randomY);
             } else if (this.randomX > otherRoom.leftX && this.randomX < otherRoom.rightX) {
@@ -200,7 +198,7 @@ public class World {
         private void checkConnectionsDuringHallwayGeneration(int x, int y) {
             int gridToInt = gridToInteger(x, y);
             Room otherRoom = roomGridPositionMap.get(gridToInt);
-            if (otherRoom != null) {
+            if (otherRoom != null && !otherRoom.equals(this)) {
                 roomConnections.union(this.id, otherRoom.id);
             }
         }
@@ -213,8 +211,6 @@ public class World {
     private int gridToInteger(int x, int y) {
         return x + (y * screenWidth);
     }
-
-
 
 }
 
