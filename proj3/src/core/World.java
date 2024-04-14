@@ -1,31 +1,29 @@
 package core;
 
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 import tileengine.TETile;
 import tileengine.Tileset;
 import utils.RandomUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class World {
     // build your own world!
-    private TETile[][] world;
-    private List<Room> rooms;
-    private Map<Integer, Room> roomGridPositionMap;
     private String seed;
     private Random random;
     private int screenWidth;
     private int screenHeight;
+    private List<Room> rooms;
+    private Map<Integer, Room> roomGridPositionMap;
+    private WeightedQuickUnionUF roomConnections;
+    private TETile[][] world;
     public World(int screenWidth, int screenHeight, String seed) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.rooms = new ArrayList<>();
-        this.world = new TETile[screenWidth][screenHeight];
-        System.out.println(seed);
         this.random = new Random(AutograderBuddy.parseSeed(seed));
-        System.out.println(random);
+        this.rooms = new ArrayList<>();
+        this.roomGridPositionMap = new HashMap<>();
+        this.world = new TETile[screenWidth][screenHeight];
         for (int x = 0; x < screenWidth; x++) {
             for (int y = 0; y < screenHeight; y++) {
                 world[x][y] = Tileset.NOTHING;
@@ -43,15 +41,16 @@ public class World {
     public void randomSquare() {
         boolean placed = false;
         int count = 0;
-        //int roomNumber = RandomUtils.uniform(random, 10, 25);
-        int roomNumber = 24;
+        int roomNumber = RandomUtils.uniform(random, 10, 24);
         int overflowCount = 0;
+        roomConnections = new WeightedQuickUnionUF(roomNumber + 1);
         while (!placed) {
             int roomWidth = RandomUtils.uniform(random, 4, 17);
             int roomHeight = RandomUtils.uniform(random, 4, 17);
             int xStart = RandomUtils.uniform(random, 1, screenWidth - roomWidth - 1);
             int yStart = RandomUtils.uniform(random, 1, screenHeight - roomHeight - 1);
             Room r = new Room(xStart, yStart, roomWidth, roomHeight);
+            r.id = count;
             if (!r.overlaps()) {
                 r.drawRoom();
                 if (count == roomNumber) {
@@ -68,6 +67,9 @@ public class World {
 
     public void placeHalls() {
         for (int i = 0; i < rooms.size() - 1; i++) {
+            if (roomConnections.find(rooms.get(i).id) == 0) {
+                continue;
+            }
             Room sourceRoom = rooms.get(i);
             Room destinationRoom = rooms.get(i + 1);
             sourceRoom.connectRoomsRandom(destinationRoom);
@@ -85,6 +87,7 @@ public class World {
         private int randomY;
         private int length;
         private int height;
+        private int id;
         public Room(int xStart, int yStart, int length, int height) {
             leftX = xStart;
             rightX = xStart + length - 1;
@@ -104,16 +107,21 @@ public class World {
             for (int x = leftX + 1; x < rightX; x++) {
                 for (int y = bottomY + 1; y < topY; y++) {
                     world[x][y] = Tileset.FLOOR;
+                    roomGridPositionMap.put(gridToInteger(x, y), this);
                 }
             }
             //Walls
             for (int x = leftX; x <= rightX; x++) {
                 world[x][bottomY] = Tileset.WALL;
                 world[x][topY] = Tileset.WALL;
+                roomGridPositionMap.put(gridToInteger(x, bottomY), this);
+                roomGridPositionMap.put(gridToInteger(x, topY), this);
             }
             for (int y = bottomY; y <= topY; y++) {
                 world[leftX][y] = Tileset.WALL;
                 world[rightX][y] = Tileset.WALL;
+                roomGridPositionMap.put(gridToInteger(leftX, y), this);
+                roomGridPositionMap.put(gridToInteger(rightX, y), this);
             }
         }
         private boolean overlaps() {
@@ -155,6 +163,8 @@ public class World {
             }
             for (int x = xOrigin; x <= xDestination; x++) {
                 world[x][yStart] = Tileset.FLOOR;
+                checkConnectionsDuringHallwayGeneration(x, yStart);
+
                 if (world[x][yStart - 1].equals(Tileset.NOTHING)) {
                     world[x][yStart - 1] = Tileset.WALL;
                 }
@@ -176,6 +186,7 @@ public class World {
             }
             for (int y = yOrigin; y <= yDestination; y++) {
                 world[xStart][y] = Tileset.FLOOR;
+                checkConnectionsDuringHallwayGeneration(xStart, y);
                 if (world[xStart - 1][y].equals(Tileset.NOTHING)) {
                     world[xStart - 1][y] = Tileset.WALL;
 
@@ -186,12 +197,25 @@ public class World {
 
             }
         }
+        private void checkConnectionsDuringHallwayGeneration(int x, int y) {
+            int gridToInt = gridToInteger(x, y);
+            Room otherRoom = roomGridPositionMap.get(gridToInt);
+            if (otherRoom != null) {
+                roomConnections.union(this.id, otherRoom.id);
+            }
+        }
         private void connectRoomsCenter(Room otherRoom) {
             drawHorizontalHallway(this.centerX, otherRoom.centerX, centerY);
             drawVerticalHallway(this.centerY, otherRoom.centerY, otherRoom.centerX);
         }
 
     }
+    private int gridToInteger(int x, int y) {
+        return x + (y * screenWidth);
+    }
+
+
+
 }
 
 
