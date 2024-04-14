@@ -1,8 +1,8 @@
 package core;
 
-import edu.princeton.cs.algs4.StdDraw;
 import tileengine.TERenderer;
-import tileengine.TETile;
+
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,9 +10,12 @@ public class Main {
         int height = 45;
         TERenderer ter = new TERenderer();
         ter.initialize(width, height);
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Enter a starting String with the convetion of sSEEDHEREn, ex:n18913088s :");
 
-        World myWorld = new World(width, height, "n123456789012345678s");
+        String userString = myObj.nextLine();  // Read user input
+        World myWorld = new World(width, height, userString);
 
-        ter.renderFrame(myWorld.world);
+        ter.renderFrame(myWorld.getWorld());
     }
 }
