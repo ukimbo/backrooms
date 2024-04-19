@@ -11,7 +11,7 @@ public class Main {
         TERenderer ter = new TERenderer();
         ter.initialize(width, height);
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Enter a starting String with the convetion of sSEEDHEREn, ex:n18913088s :");
+        System.out.println("Enter a starting String with the convetion of nSEEDHEREs, ex:n18913088s :");
 
         String userString = myObj.nextLine();  // Read user input
         World myWorld = new World(width, height, userString);

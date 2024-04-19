@@ -24,7 +24,7 @@ public class AutograderBuddy {
         return myWorld.getWorld();
     }
     public static long parseSeed(String input) {
-        if (input.equals("")) {
+        if (input.equals("") || input.equals("ns")) {
             return System.currentTimeMillis();
         } else if (input.length() < 2 || input.charAt(0) != 'n' || !input.endsWith("s")) {
             throw new IllegalArgumentException("Input must start with 'N' and end with 'S'.");
