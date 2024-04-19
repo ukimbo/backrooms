@@ -31,10 +31,17 @@ public class World {
         }
         this.randomSquare();
         this.placeHalls();
+        this.placeAvatar();
     }
 
     public TETile[][] getWorld() {
         return world;
+    }
+
+    public void placeAvatar() {
+        int roomNumber = RandomUtils.uniform(random, 0, rooms.size() - 1);
+        Room spawnRoom = rooms.get(roomNumber);
+        world[spawnRoom.centerX][spawnRoom.centerY] = Tileset.AVATAR;
     }
 
 
