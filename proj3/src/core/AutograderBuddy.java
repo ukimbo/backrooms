@@ -18,8 +18,25 @@ public class AutograderBuddy {
      * @return the 2D TETile[][] representing the state of the world
      */
     public static TETile[][] getWorldFromInput(String input) {
+        World myWorld = new World(80, 45, "ns", true);
 
-        World myWorld = new World(80, 45, input, true);
+        String seeed = "";
+        int i = 0;
+        if (input.charAt(i) == 'N') {
+            i++;
+            StringBuilder seedSb = new StringBuilder();
+            while (Character.isDigit(input.charAt(i))) {
+                seedSb.append(input.charAt(i++));
+            }
+            if (input.charAt(i) == 'S') {
+                i++;
+                myWorld = new World(80, 45, seedSb.toString(), true);
+            }
+        } else if (input.charAt(i) == 'L') {
+            i++;
+            myWorld.runGame();
+        }
+
 
         return myWorld.getWorld();
     }
