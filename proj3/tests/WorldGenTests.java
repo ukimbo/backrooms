@@ -8,7 +8,7 @@ public class WorldGenTests {
     @Test
     public void basicTest() {
         // put different seeds here to test different worlds
-        TETile[][] tiles = AutograderBuddy.getWorldFromInput("n18913088s");
+        TETile[][] tiles = AutograderBuddy.getWorldFromInput("ns");
 
         TERenderer ter = new TERenderer();
         ter.initialize(tiles.length, tiles[0].length);
