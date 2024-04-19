@@ -25,8 +25,10 @@ public class World {
     private int charPosX;
     private int charPosY;
 
+    private boolean placeChar;
+
     private boolean gameStatus;
-    public World(int screenWidth, int screenHeight, String seed) {
+    public World(int screenWidth, int screenHeight, String seed, boolean placeChar) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.seed = AutograderBuddy.parseSeed(seed);
@@ -41,7 +43,9 @@ public class World {
         }
         this.randomSquare();
         this.placeHalls();
-        this.placeAvatarRandom();
+        if (placeChar){
+            this.placeAvatarRandom();
+        }
         this.gameStatus = true;
 
     }
@@ -174,8 +178,86 @@ public class World {
         seed = in.readLong();
         charPosX = in.readInt();
         charPosY = in.readInt();
+        world = new World(screenWidth, screenHeight, "n" + seed + "s", false).world;
+        world[charPosX][charPosY] = Tileset.AVATAR;
         in.close();
     }
+
+    public void mainMenu() {
+        boolean loopMenu = true;
+
+        while (loopMenu) {
+            StdDraw.clear(StdDraw.BLACK);
+            StdDraw.setPenColor(StdDraw.WHITE);
+
+            StdDraw.text(40, 30, "New Game (Press 'N')");
+            StdDraw.text(40, 20, "Load Game (Press 'L')");
+            StdDraw.text(40, 10, "Quit (Press 'Q')");
+            StdDraw.show();
+
+            // Check for user input
+            if (StdDraw.hasNextKeyTyped()) {
+                char choice = StdDraw.nextKeyTyped();
+                if (choice == 'n') {
+                    loopMenu = false;
+                    String getSeed = getInputSeed();
+                    World newGame = new World(80, 45, getSeed,   true);
+                    newGame.runGame();
+                    break;
+                }
+                else if(choice == 'l') {
+                    loopMenu = false;
+                    Long getSeed = loadSeed();
+                    World newGame = new World(80, 45, "n" + getSeed + "s",   false);
+                    newGame.loadGame("save.txt");
+                    newGame.runGame();
+                    break;
+                }
+            }
+            StdDraw.pause(100);
+        }
+    }
+    public Long loadSeed() {
+        In in = new In("save.txt");
+        if (!in.exists()) {
+            System.out.println("Save file does not exist");
+            return null;
+        }
+
+        seed = in.readLong();
+        return seed;
+    }
+    public static String getInputSeed() {
+        StringBuilder seedBuilder = new StringBuilder();
+        seedBuilder.append("n");
+        StdDraw.clear(StdDraw.BLACK);
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.text(40, 20, "Enter Seed: (Press 'S' to Start)");
+
+        StdDraw.show();
+        boolean enterSeed = true;
+        int count = 3;
+        while (enterSeed) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char ch = StdDraw.nextKeyTyped();
+                if (Character.isDigit(ch)) {
+                    count += 1;
+                    seedBuilder.append(ch);
+                    StdDraw.text(33 + count,18 , String.valueOf(ch));
+                    StdDraw.show();
+                } else if (ch == 's' || ch == 'S') {
+                    if (seedBuilder.length() > 0) {
+                        enterSeed = false;
+                    }
+                }
+            }
+
+            StdDraw.pause(50);
+        }
+        seedBuilder.append("s");
+        return seedBuilder.toString();
+    }
+
 
     private class Room {
         private int leftX;

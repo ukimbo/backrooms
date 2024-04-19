@@ -19,7 +19,7 @@ public class AutograderBuddy {
      */
     public static TETile[][] getWorldFromInput(String input) {
 
-        World myWorld = new World(80, 45, input);
+        World myWorld = new World(80, 45, input, true);
 
         return myWorld.getWorld();
     }
