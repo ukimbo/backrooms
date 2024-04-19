@@ -129,7 +129,7 @@ public class World {
             } else if (key == 'l') {
                 loadGame("save.txt");
             } else if (key == ':') {
-//                char key2 = StdDraw.nextKeyTyped();
+//                 char key2 = StdDraw.nextKeyTyped();
 //                 if (key2 == 'Q') {
                     saveGame("save.txt");
 //                }
@@ -169,18 +169,21 @@ public class World {
     }
 
     public void loadGame(String filename) {
+
         In in = new In(filename);
         if (!in.exists()) {
             System.out.println("Save file does not exist");
             return;
         }
+        if (in.hasNextChar()){
+            seed = in.readLong();
+            charPosX = in.readInt();
+            charPosY = in.readInt();
+            world = new World(screenWidth, screenHeight, "n" + seed + "s", false).world;
+            world[charPosX][charPosY] = Tileset.AVATAR;
+            in.close();
+        }
 
-        seed = in.readLong();
-        charPosX = in.readInt();
-        charPosY = in.readInt();
-        world = new World(screenWidth, screenHeight, "n" + seed + "s", false).world;
-        world[charPosX][charPosY] = Tileset.AVATAR;
-        in.close();
     }
 
     public void mainMenu() {
@@ -206,11 +209,17 @@ public class World {
                     break;
                 }
                 else if(choice == 'l') {
+                    World newGame;
                     loopMenu = false;
                     Long getSeed = loadSeed();
-                    World newGame = new World(80, 45, "n" + getSeed + "s",   false);
-                    newGame.loadGame("save.txt");
-                    newGame.runGame();
+                    if(getSeed == null){
+                        System.out.println("Can't Load because there is nothing saved!");
+                    }else {
+                         newGame = new World(80, 45, "n" + getSeed + "s",   false);
+                         newGame.loadGame("save.txt");
+                        newGame.runGame();
+                    }
+
                     break;
                 }
             }
@@ -219,13 +228,16 @@ public class World {
     }
     public Long loadSeed() {
         In in = new In("save.txt");
+
         if (!in.exists()) {
             System.out.println("Save file does not exist");
             return null;
         }
-
-        seed = in.readLong();
-        return seed;
+        if (in.hasNextChar()){
+            seed = in.readLong();
+            return seed;
+        }
+       return null;
     }
     public static String getInputSeed() {
         StringBuilder seedBuilder = new StringBuilder();
