@@ -10,6 +10,8 @@ import utils.FileUtils;
 import utils.RandomUtils;
 import tileengine.TERenderer;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class World {
@@ -105,10 +107,10 @@ public class World {
 
     public void runGame() {
         TERenderer ter = new TERenderer();
-
         while (gameStatus) {
             ter.renderFrame(getWorld());
             updateBoard();
+            HUD();
             StdDraw.show();
             StdDraw.pause(20);  // Adjust based on desired frame rate
         }
@@ -148,7 +150,7 @@ public class World {
             charPosX = newX;
             charPosY = newY;
             world[charPosX][charPosY] = Tileset.AVATAR; // Move avatar to new position
-            System.out.println("Went from " + charPosX + " " + charPosY + " to " + newX + " " + newY);
+            //System.out.println("Went from " + charPosX + " " + charPosY + " to " + newX + " " + newY);
 
         } else {
             System.out.println("Cant move");
@@ -183,7 +185,6 @@ public class World {
             world[charPosX][charPosY] = Tileset.AVATAR;
             in.close();
         }
-
     }
 
     public void mainMenu() {
@@ -204,23 +205,22 @@ public class World {
                 if (choice == 'n') {
                     loopMenu = false;
                     String getSeed = getInputSeed();
-                    World newGame = new World(80, 45, getSeed,   true);
+                    World newGame = new World(80, 45, getSeed, true);
                     newGame.runGame();
                     break;
                 }
-                else if(choice == 'l') {
+                else if (choice == 'l') {
                     World newGame;
-                    loopMenu = false;
                     Long getSeed = loadSeed();
-                    if(getSeed == null){
+                    if (getSeed == null){
                         System.out.println("Can't Load because there is nothing saved!");
-                    }else {
-                         newGame = new World(80, 45, "n" + getSeed + "s",   false);
+                    } else {
+                        loopMenu = false;
+                         newGame = new World(80, 45, "n" + getSeed + "s", false);
                          newGame.loadGame("save.txt");
-                        newGame.runGame();
+                         newGame.runGame();
+                        break;
                     }
-
-                    break;
                 }
             }
             StdDraw.pause(100);
@@ -268,6 +268,25 @@ public class World {
         }
         seedBuilder.append("s");
         return seedBuilder.toString();
+    }
+    private void HUD() {
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.textLeft(1, 46, "Current Position: (" + charPosX + ", " + charPosY + ")");
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a");
+        String formattedDateTime = currentDateTime.format(formatter);
+        StdDraw.textRight(79, 46, formattedDateTime);
+        mouseHover();
+    }
+    private void mouseHover() {
+        int mouseX = (int) StdDraw.mouseX();
+        int mouseY = (int) StdDraw.mouseY();
+        if ((mouseX < screenWidth && mouseX >= 0) && (mouseY < screenHeight && mouseY >= 0)) {
+            if (world[mouseX][mouseY] != Tileset.NOTHING) {
+                StdDraw.textLeft(1, 45, "Tile: " + world[mouseX][mouseY].description());
+            }
+        }
+
     }
 
 

@@ -9,7 +9,7 @@ public class Main {
         int width = 80;
         int height = 45;
         TERenderer ter = new TERenderer();
-        ter.initialize(width, height);
+        ter.initialize(width, height + 2);
 //        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
 //        System.out.println("Enter a starting String with the convetion of nSEEDHEREs, ex:n18913088s :");
 //
