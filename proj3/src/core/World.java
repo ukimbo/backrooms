@@ -107,6 +107,7 @@ public class World {
 
     public void runGame() {
         TERenderer ter = new TERenderer();
+
         while (gameStatus) {
             ter.renderFrame(getWorld());
             updateBoard();
