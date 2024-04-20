@@ -210,17 +210,21 @@ public class World {
                 }
                 else if(choice == 'l') {
                     World newGame;
-                    loopMenu = false;
                     Long getSeed = loadSeed();
                     if(getSeed == null){
                         System.out.println("Can't Load because there is nothing saved!");
+                        StdDraw.text(40, 10, "Quit (Press 'Q')");
+
                     }else {
-                         newGame = new World(80, 45, "n" + getSeed + "s",   false);
+                        loopMenu = false;
+                        newGame = new World(80, 45, "n" + getSeed + "s",   false);
                          newGame.loadGame("save.txt");
                         newGame.runGame();
+                        break;
+
                     }
 
-                    break;
+
                 }
             }
             StdDraw.pause(100);
