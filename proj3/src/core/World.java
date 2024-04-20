@@ -271,7 +271,9 @@ public class World {
     }
     private void HUD() {
         StdDraw.setPenColor(StdDraw.WHITE);
-        StdDraw.textLeft(1, 46, "Current Position: (" + charPosX + ", " + charPosY + ")");
+        StringBuilder currPos = new StringBuilder("Current Position: (");
+        currPos.append(charPosX).append(", ").append(charPosY).append(")");
+        StdDraw.textLeft(1, 46, currPos.toString());
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a");
         String formattedDateTime = currentDateTime.format(formatter);
