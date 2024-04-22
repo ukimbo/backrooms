@@ -26,6 +26,9 @@ public class World {
     private TETile[][] world;
     private int charPosX;
     private int charPosY;
+    private int doorPosX;
+    private int doorPosY;
+    private boolean controlVisuals = false;
     private boolean placeChar;
     private boolean gameStatus;
     private static TETile wall = Tileset.BACKROOMS;
@@ -61,7 +64,7 @@ public class World {
     }
 
     public void placeAvatarRandom() {
-        int roomNumber = RandomUtils.uniform(random, 0, rooms.size() - 1);
+        int roomNumber = RandomUtils.uniform(random, 0, rooms.size());
         Room spawnRoom = rooms.get(roomNumber);
         world[spawnRoom.centerX][spawnRoom.centerY] = this.avatar;
         charPosX = spawnRoom.centerX;
@@ -114,12 +117,20 @@ public class World {
         keyTypes.add(Tileset.SILVERKEY);
         keyTypes.add(Tileset.GOLDKEY);
         for (int i = 0; i < 3; i++) {
-            int roomNumber = RandomUtils.uniform(random, 0, rooms.size() - 1);
-            Room spawnRoom = rooms.get(roomNumber);
+            Room spawnRoom = rooms.get(i);
             Key currKey = new Key(spawnRoom.centerX, spawnRoom.centerY, keyTypes.get(i));
             keyList.add(currKey);
             world[spawnRoom.centerX][spawnRoom.centerY] = currKey.key;
         }
+        int realKey = RandomUtils.uniform(random, 0, 3);
+        keyList.get(realKey).realKey = true;
+        int roomNumber = RandomUtils.uniform(random, 3, rooms.size());
+        Room doorRoom = rooms.get(roomNumber);
+        doorRoom.randomX = RandomUtils.uniform(random, doorRoom.leftX + 1, doorRoom.rightX - 1);
+        doorRoom.randomY = RandomUtils.uniform(random, doorRoom.bottomY + 1, doorRoom.topY - 1);
+        world[doorRoom.randomX][doorRoom.randomY] = Tileset.LOCKED_DOOR;
+        doorPosX = doorRoom.randomX;
+        doorPosY = doorRoom.randomY;
     }
 
     public void runGame() {
@@ -148,9 +159,10 @@ public class World {
                 tryMove(0, 1);
             } else if (key == 'l') {
                 loadGame("save.txt");
-            } else if (key == 'i') {
+            } else if (key == 'e') {
                 interact();
-                System.out.println("pressed i");
+            } else if (key == 'c') {
+                controlVisuals = !controlVisuals;
             } else if (key == ':') {
                 saveCheck.append(":");
                 System.out.println(saveCheck);
@@ -182,7 +194,8 @@ public class World {
     }
 
     private boolean canMove(int x, int y) {
-        return (x >= 0 && x < screenWidth && y >= 0 && y < screenHeight) && (world[x][y] == floor);
+        return (x >= 0 && x < screenWidth && y >= 0 && y < screenHeight) &&
+                (world[x][y] == floor || world[x][y].equals(Tileset.UNLOCKED_DOOR));
     }
 
     public void saveGame(String filename) {
@@ -344,25 +357,34 @@ public class World {
         StdDraw.setPenColor(StdDraw.WHITE);
         StringBuilder currPos = new StringBuilder("Current Position: (");
         currPos.append(charPosX).append(", ").append(charPosY).append(")");
-        StdDraw.textLeft(1, 46, currPos.toString());
+        StdDraw.textLeft(1, 47, currPos.toString());
+        StdDraw.textLeft(1, 45, "Press 'C' for Controls");
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a");
         String formattedDateTime = currentDateTime.format(formatter);
-        StdDraw.textRight(79, 46, formattedDateTime);
-        StdDraw.textRight(74, 45, "Keys Collected: ");
+        StdDraw.textRight(79, 47, formattedDateTime);
+        controlHUD();
         keyHUD();
         mouseHover();
     }
 
+    private void controlHUD() {
+        if (controlVisuals) {
+            StdDraw.text(40, 47, "'W' -> Up, 'S' -> Down");
+            StdDraw.text(40, 46, "'A' -> Left, 'D' -> Right");
+            StdDraw.text(40, 45, "'E' -> Interact");
+        }
+    }
     private void keyHUD() {
+        StdDraw.textRight(74, 46, "Keys Collected: ");
         if (keyList.get(0).collected) {
-            StdDraw.picture(75, 45, "aesthetic/bronze key.jpg", 1, 1);
+            StdDraw.picture(75, 46, "aesthetic/bronze key.jpg", 1, 1);
         }
         if (keyList.get(1).collected) {
-            StdDraw.picture(77, 45, "aesthetic/silver key.jpg", 1, 1);
+            StdDraw.picture(77, 46, "aesthetic/silver key.jpg", 1, 1);
         }
         if (keyList.get(2).collected) {
-            StdDraw.picture(79, 45, "aesthetic/gold key.jpg", 1, 1);
+            StdDraw.picture(79, 46, "aesthetic/gold key.jpg", 1, 1);
         }
     }
 
@@ -371,7 +393,7 @@ public class World {
         int mouseY = (int) StdDraw.mouseY();
         if ((mouseX < screenWidth && mouseX >= 0) && (mouseY < screenHeight && mouseY >= 0)) {
             if (world[mouseX][mouseY] != Tileset.NOTHING) {
-                StdDraw.textLeft(1, 45, "Tile: " + world[mouseX][mouseY].description());
+                StdDraw.textLeft(1, 46, "Tile: " + world[mouseX][mouseY].description());
             }
         }
 
@@ -381,6 +403,9 @@ public class World {
             if (interactHelper(key.x, key.y)) {
                 key.interact();
             }
+        }
+        if (interactHelper(doorPosX, doorPosY) && Key.realKeyCollected) {
+            world[doorPosX][doorPosY] = Tileset.UNLOCKED_DOOR;
         }
     }
     private boolean interactHelper(int x, int y) {
@@ -406,17 +431,22 @@ public class World {
         private TETile key;
         private boolean collected;
         private boolean realKey;
+        private static boolean realKeyCollected;
 
         public Key(int x, int y, TETile typeKey) {
             this.x = x;
             this.y = y;
             this.key = typeKey;
             this.collected = false;
+            this.realKey = false;
         }
 
         private void interact() {
             this.collected = true;
             world[x][y] = floor;
+            if (this.realKey) {
+                realKeyCollected = true;
+            }
             System.out.println("key collected");
         }
 
