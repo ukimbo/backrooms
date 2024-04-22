@@ -387,8 +387,9 @@ public class World {
                     this.mainMenu();
                 }
             }
-
             StdDraw.pause(50);
+
+
         }
     }
 
