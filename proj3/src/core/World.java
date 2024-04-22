@@ -189,12 +189,12 @@ public class World {
             world[charPosX][charPosY] = Tileset.AVATAR; // Move avatar to new position
             //System.out.println("Went from " + charPosX + " " + charPosY + " to " + newX + " " + newY);
 
-        } else {
-            System.out.println("Cant move");
-            System.out.println("Tried to go from " + charPosX + " " + charPosY + " to " + newX + " " + newY);
-
-            world[charPosX][charPosY] = Tileset.WRONG;
-        }
+        } //else {
+//            System.out.println("Cant move");
+//            System.out.println("Tried to go from " + charPosX + " " + charPosY + " to " + newX + " " + newY);
+//
+//            world[charPosX][charPosY] = Tileset.WRONG;
+//        }
     }
 
     private boolean canMove(int x, int y) {
@@ -202,7 +202,7 @@ public class World {
     }
 
     public void saveGame(String filename) {
-        System.out.println("Should save");
+//        System.out.println("Should save");
         String context = seed + "\n" + charPosX + "\n" + charPosY + "\n";
         FileUtils.writeFile(filename, context);
     }
