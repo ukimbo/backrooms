@@ -20,19 +20,18 @@ public class AutograderBuddy {
     public static TETile[][] getWorldFromInput(String input) {
         World myWorld = new World(80, 45, "ns", true);
 
-        String seeed = "";
         int i = 0;
-        if (input.charAt(i) == 'N') {
+        if (input.charAt(i) == 'n') {
             i++;
             StringBuilder seedSb = new StringBuilder();
             while (Character.isDigit(input.charAt(i))) {
                 seedSb.append(input.charAt(i++));
             }
-            if (input.charAt(i) == 'S') {
+            if (input.charAt(i) == 's') {
                 i++;
                 myWorld = new World(80, 45, seedSb.toString(), true);
             }
-        } else if (input.charAt(i) == 'L') {
+        } else if (input.charAt(i) == 'l') {
             i++;
             myWorld.loadGame("save.txt");
         }
@@ -40,20 +39,20 @@ public class AutograderBuddy {
         for (; i < input.length(); i++) {
             char command = input.charAt(i);
             if (command == ':') {
-                if (i + 1 < input.length() && input.charAt(i + 1) == 'Q') {
+                if (i + 1 < input.length() && input.charAt(i + 1) == 'q') {
                     myWorld.saveGame("save.txt");  // Ensure correct handling of save filename/path
                     break;
                 }
             } else {
-                if (command == 'A') {
+                if (command == 'a') {
                     myWorld.tryMove(-1, 0);
-                } else if (command == 'B') {
+                } else if (command == 'b') {
                     myWorld.tryMove(1, 0);
-                } else if (command == 'S') {
+                } else if (command == 's') {
                     myWorld.tryMove(0, -1);
-                } else if (command == 'W') {
+                } else if (command == 'w') {
                     myWorld.tryMove(0, 1);
-                } else if (command == 'L') {
+                } else if (command == 'l') {
                     myWorld.loadGame("save.txt");
                 }
             }

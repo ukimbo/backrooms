@@ -18,7 +18,7 @@ public class WorldGenTests {
 
     @Test
     public void basicInteractivityTest() {
-        TETile[][] tiles = AutograderBuddy.getWorldFromInput("n123SWDWDWL");
+        TETile[][] tiles = AutograderBuddy.getWorldFromInput("n5643591630821615871swwaawd");
 
         TERenderer ter = new TERenderer();
         ter.initialize(tiles.length, tiles[0].length);
