@@ -20,33 +20,37 @@ public class AutograderBuddy {
     public static TETile[][] getWorldFromInput(String input) {
         World myWorld = new World(80, 45, "ns", true);
 
+        String inputLower = input.toLowerCase();
         int i = 0;
-        if (input.charAt(i) == 'n') {
-            i++;
+        if (inputLower.charAt(i) == 'n') {
             StringBuilder seedSb = new StringBuilder();
+            seedSb.append(input.charAt(i));
+            i++;
             while (Character.isDigit(input.charAt(i))) {
-                seedSb.append(input.charAt(i++));
-            }
-            if (input.charAt(i) == 's') {
+                seedSb.append(input.charAt(i));
                 i++;
-                myWorld = new World(80, 45, seedSb.toString(), true);
             }
-        } else if (input.charAt(i) == 'l') {
+            if (inputLower.charAt(i) == 's') {
+                seedSb.append(input.charAt(i));
+                myWorld = new World(80, 45, seedSb.toString(), true);
+                i++;
+            }
+        } else if (inputLower.charAt(i) == 'l') {
             i++;
             myWorld.loadGame("save.txt");
         }
 
-        for (; i < input.length(); i++) {
-            char command = input.charAt(i);
+        for (; i < inputLower.length(); i++) {
+            char command = inputLower.charAt(i);
             if (command == ':') {
-                if (i + 1 < input.length() && input.charAt(i + 1) == 'q') {
+                if (i + 1 < inputLower.length() &&  inputLower.charAt(i + 1) == 'q') {
                     myWorld.saveGame("save.txt");  // Ensure correct handling of save filename/path
                     break;
                 }
             } else {
                 if (command == 'a') {
                     myWorld.tryMove(-1, 0);
-                } else if (command == 'b') {
+                } else if (command == 'd') {
                     myWorld.tryMove(1, 0);
                 } else if (command == 's') {
                     myWorld.tryMove(0, -1);

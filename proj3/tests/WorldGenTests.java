@@ -25,6 +25,15 @@ public class WorldGenTests {
         ter.renderFrame(tiles);
         StdDraw.pause(2000000);
     }
+    @Test
+    public void basicInteractivity2Test() {
+        TETile[][] tiles = AutograderBuddy.getWorldFromInput("n5643591630821615871s");
+
+        TERenderer ter = new TERenderer();
+        ter.initialize(tiles.length, tiles[0].length);
+        ter.renderFrame(tiles);
+        StdDraw.pause(2000000);
+    }
 
     @Test
     public void basicSaveTest() {
@@ -33,6 +42,6 @@ public class WorldGenTests {
         TERenderer ter = new TERenderer();
         ter.initialize(tiles.length, tiles[0].length);
         ter.renderFrame(tiles);
-        StdDraw.pause(2000000);
+        StdDraw.pause(1000);
     }
 }

@@ -7,7 +7,7 @@ public class Main {
         int width = 80;
         int height = 45;
         TERenderer ter = new TERenderer();
-        ter.initialize(width, height + 2);
+        ter.initialize(width, height + 3);
         World myWorld = new World(width, height, "ns", false);
         myWorld.mainMenu();
     }
