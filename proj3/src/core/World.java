@@ -163,7 +163,10 @@ public class World {
                 interact();
             } else if (key == 'c') {
                 controlVisuals = !controlVisuals;
-            } else if (key == ':') {
+            } else if (key == 'm') {
+                this.gameStatus = false;
+                mainMenu();
+            }else if (key == ':') {
                 saveCheck.append(":");
                 System.out.println(saveCheck);
             } else if (key == 'Q') {
@@ -185,7 +188,11 @@ public class World {
         int newY = charPosY + Y;
 
         if (canMove(newX, newY)) {
-            world[charPosX][charPosY] = floor; // Set the old position back to floor
+            if (!(charPosX == doorPosX && charPosY == doorPosY)) {
+                world[charPosX][charPosY] = floor; // Set the old position back to floor
+            } else {
+                world[charPosX][charPosY] = Tileset.UNLOCKED_DOOR;
+            }
             charPosX = newX;
             charPosY = newY;
             world[charPosX][charPosY] = avatar; // Move avatar to new position
@@ -196,6 +203,30 @@ public class World {
     private boolean canMove(int x, int y) {
         return (x >= 0 && x < screenWidth && y >= 0 && y < screenHeight) &&
                 (world[x][y] == floor || world[x][y].equals(Tileset.UNLOCKED_DOOR));
+    }
+
+    private void interact() {
+        for (Key key : keyList) {
+            if (interactHelper(key.x, key.y)) {
+                key.interact();
+            }
+        }
+        if (interactHelper(doorPosX, doorPosY) && Key.realKeyCollected) {
+            world[doorPosX][doorPosY] = Tileset.UNLOCKED_DOOR;
+        }
+    }
+    private boolean interactHelper(int x, int y) {
+        if (charPosX - 1 == x && charPosY == y) {
+            return true;
+        } else if (charPosX + 1 == x && charPosY == y) {
+            return true;
+        } else if (charPosX == x && charPosY + 1 == y) {
+            return true;
+        } else if (charPosX == x && charPosY - 1 == y) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void saveGame(String filename) {
@@ -351,18 +382,17 @@ public class World {
         }
     }
 
-
-
     private void hud() {
         StdDraw.setPenColor(StdDraw.WHITE);
         StringBuilder currPos = new StringBuilder("Current Position: (");
         currPos.append(charPosX).append(", ").append(charPosY).append(")");
         StdDraw.textLeft(1, 47, currPos.toString());
-        StdDraw.textLeft(1, 45, "Press 'C' for Controls");
+        StdDraw.textLeft(1, 46, "Press 'C' for Controls");
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a");
         String formattedDateTime = currentDateTime.format(formatter);
         StdDraw.textRight(79, 47, formattedDateTime);
+        StdDraw.textRight(79, 46, "Press 'M' for Main Menu");
         controlHUD();
         keyHUD();
         mouseHover();
@@ -370,21 +400,20 @@ public class World {
 
     private void controlHUD() {
         if (controlVisuals) {
-            StdDraw.text(40, 47, "'W' -> Up, 'S' -> Down");
-            StdDraw.text(40, 46, "'A' -> Left, 'D' -> Right");
-            StdDraw.text(40, 45, "'E' -> Interact");
+            StdDraw.text(40, 47, "'W' -> Up, 'S' -> Down, 'E' -> Interact,");
+            StdDraw.text(40, 46, "'A' -> Left, 'D' -> Right, ':' + 'Q' -> Save");
         }
     }
     private void keyHUD() {
-        StdDraw.textRight(74, 46, "Keys Collected: ");
+        StdDraw.textRight(74, 45, "Keys Collected: ");
         if (keyList.get(0).collected) {
-            StdDraw.picture(75, 46, "aesthetic/bronze key.jpg", 1, 1);
+            StdDraw.picture(75, 45, "aesthetic/bronze key.jpg", 1, 1);
         }
         if (keyList.get(1).collected) {
-            StdDraw.picture(77, 46, "aesthetic/silver key.jpg", 1, 1);
+            StdDraw.picture(77, 45, "aesthetic/silver key.jpg", 1, 1);
         }
         if (keyList.get(2).collected) {
-            StdDraw.picture(79, 46, "aesthetic/gold key.jpg", 1, 1);
+            StdDraw.picture(79, 45, "aesthetic/gold key.jpg", 1, 1);
         }
     }
 
@@ -393,33 +422,10 @@ public class World {
         int mouseY = (int) StdDraw.mouseY();
         if ((mouseX < screenWidth && mouseX >= 0) && (mouseY < screenHeight && mouseY >= 0)) {
             if (world[mouseX][mouseY] != Tileset.NOTHING) {
-                StdDraw.textLeft(1, 46, "Tile: " + world[mouseX][mouseY].description());
+                StdDraw.textLeft(1, 45, "Tile: " + world[mouseX][mouseY].description());
             }
         }
 
-    }
-    private void interact() {
-        for (Key key : keyList) {
-            if (interactHelper(key.x, key.y)) {
-                key.interact();
-            }
-        }
-        if (interactHelper(doorPosX, doorPosY) && Key.realKeyCollected) {
-            world[doorPosX][doorPosY] = Tileset.UNLOCKED_DOOR;
-        }
-    }
-    private boolean interactHelper(int x, int y) {
-        if (charPosX - 1 == x && charPosY == y) {
-            return true;
-        } else if (charPosX + 1 == x && charPosY == y) {
-            return true;
-        } else if (charPosX == x && charPosY + 1 == y) {
-            return true;
-        } else if (charPosX == x && charPosY - 1 == y) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private int gridToInteger(int x, int y) {
@@ -447,7 +453,6 @@ public class World {
             if (this.realKey) {
                 realKeyCollected = true;
             }
-            System.out.println("key collected");
         }
 
     }
