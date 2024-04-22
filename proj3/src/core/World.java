@@ -66,6 +66,7 @@ public class World {
     public void placeAvatarRandom() {
         int roomNumber = RandomUtils.uniform(random, 0, rooms.size());
         Room spawnRoom = rooms.get(roomNumber);
+        rooms.remove(roomNumber);
         world[spawnRoom.centerX][spawnRoom.centerY] = this.avatar;
         charPosX = spawnRoom.centerX;
         charPosY = spawnRoom.centerY;
@@ -124,7 +125,7 @@ public class World {
         }
         int realKey = RandomUtils.uniform(random, 0, 3);
         keyList.get(realKey).realKey = true;
-        int roomNumber = RandomUtils.uniform(random, 3, rooms.size());
+        int roomNumber = RandomUtils.uniform(random, 3, rooms.size() - 1);
         Room doorRoom = rooms.get(roomNumber);
         doorRoom.randomX = RandomUtils.uniform(random, doorRoom.leftX + 1, doorRoom.rightX - 1);
         doorRoom.randomY = RandomUtils.uniform(random, doorRoom.bottomY + 1, doorRoom.topY - 1);
@@ -218,7 +219,9 @@ public class World {
         interactDoor();
     }
     private boolean interactHelper(int x, int y) {
-        if (charPosX - 1 == x && charPosY == y) {
+        if (charPosX == x && charPosY == y) {
+            return true;
+        } else if (charPosX - 1 == x && charPosY == y) {
             return true;
         } else if (charPosX + 1 == x && charPosY == y) {
             return true;
@@ -367,6 +370,7 @@ public class World {
         StdDraw.picture(40, 35, "aesthetic/default preview.png");
         StdDraw.picture(60, 35, "aesthetic/castle preview.png");
         StdDraw.text(40, 25, "Choose Avatar:");
+        StdDraw.picture(40, 20, "aesthetic/green.jpg");
         StdDraw.show();
         boolean chooseTheme = true;
         int count = 3;
