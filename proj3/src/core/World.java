@@ -31,6 +31,7 @@ public class World {
     private static TETile wall = Tileset.BACKROOMS;
     private TETile floor = Tileset.BACKROOMSFLOOR;
     private TETile avatar = Tileset.AVATAR;
+    private Set<Key> keyList = new HashSet<>();
 
     public World(int screenWidth, int screenHeight, String seed, boolean placeChar) {
         this.screenWidth = screenWidth;
@@ -50,6 +51,7 @@ public class World {
         if (placeChar) {
             this.placeAvatarRandom();
         }
+        this.placeKeys();
         this.gameStatus = true;
 
     }
@@ -106,9 +108,21 @@ public class World {
 
     }
 
+    public void placeKeys() {
+        List<TETile> keyTypes = new ArrayList<>();
+        keyTypes.add(Tileset.BRONZEKEY);
+        keyTypes.add(Tileset.SILVERKEY);
+        keyTypes.add(Tileset.GOLDKEY);
+        for (int i = 0; i < 3; i++) {
+            int roomNumber = RandomUtils.uniform(random, 0, rooms.size() - 1);
+            Room spawnRoom = rooms.get(roomNumber);
+            Key currKey = new Key(spawnRoom.centerX, spawnRoom.centerY, keyTypes.get(i));
+            world[spawnRoom.centerX][spawnRoom.centerY] = currKey.key;
+        }
+    }
+
     public void runGame() {
         TERenderer ter = new TERenderer();
-
         while (gameStatus) {
             ter.renderFrame(getWorld());
             updateBoard();
@@ -133,6 +147,8 @@ public class World {
                 tryMove(0, 1);
             } else if (key == 'l') {
                 loadGame("save.txt");
+            } else if (key == 'i') {
+                interact();
             } else if (key == ':') {
                 saveCheck.append(":");
                 System.out.println(saveCheck);
@@ -159,14 +175,8 @@ public class World {
             charPosX = newX;
             charPosY = newY;
             world[charPosX][charPosY] = avatar; // Move avatar to new position
-            //System.out.println("Went from " + charPosX + " " + charPosY + " to " + newX + " " + newY);
 
-        } //else {
-//            System.out.println("Cant move");
-//            System.out.println("Tried to go from " + charPosX + " " + charPosY + " to " + newX + " " + newY);
-//
-//            world[charPosX][charPosY] = Tileset.WRONG;
-//        }
+        }
     }
 
     private boolean canMove(int x, int y) {
@@ -174,7 +184,6 @@ public class World {
     }
 
     public void saveGame(String filename) {
-//        System.out.println("Should save");
         String context = seed + "\n" + charPosX + "\n" + charPosY + "\n";
         FileUtils.writeFile(filename, context);
     }
@@ -293,14 +302,15 @@ public class World {
     public void themeMenu() {
         StdDraw.clear(StdDraw.BLACK);
         StdDraw.setPenColor(StdDraw.WHITE);
-        StdDraw.text(40, 20, "Choose Theme:");
-        StdDraw.text(20, 15, "Backrooms: Press '1'");
-        StdDraw.text(40, 15, "Default: Press '2'");
-        StdDraw.text(60, 15, "Castle: Press '3'");
+        StdDraw.text(40, 40, "Choose Theme:");
+        StdDraw.text(20, 30, "Backrooms: Press '1'");
+        StdDraw.text(40, 30, "Default: Press '2'");
+        StdDraw.text(60, 30, "Castle: Press '3'");
         StdDraw.text(40, 5, "Press 'B' to go back");
-        StdDraw.picture(20, 25, "aesthetic/backrooms preview.png");
-        StdDraw.picture(40, 25, "aesthetic/default preview.png");
-        StdDraw.picture(60, 25, "aesthetic/castle preview.png");
+        StdDraw.picture(20, 35, "aesthetic/backrooms preview.png");
+        StdDraw.picture(40, 35, "aesthetic/default preview.png");
+        StdDraw.picture(60, 35, "aesthetic/castle preview.png");
+        StdDraw.text(40, 25, "Choose Avatar:");
         StdDraw.show();
         boolean chooseTheme = true;
         int count = 3;
@@ -337,7 +347,21 @@ public class World {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a");
         String formattedDateTime = currentDateTime.format(formatter);
         StdDraw.textRight(79, 46, formattedDateTime);
+        StdDraw.textRight(74, 45, "Keys Collected: ");
+        keyHUD();
         mouseHover();
+    }
+
+    private void keyHUD() {
+        for (Key key: keyList) {
+            if (key.collected && key.key.equals(Tileset.BRONZEKEY)) {
+                StdDraw.picture(75, 35, "aesthetic/bronze key.jpg");
+            } else if (key.collected && key.key.equals(Tileset.SILVERKEY)) {
+                StdDraw.picture(77, 35, "aesthetic/silver key.jpg");
+            } else if (key.collected && key.key.equals(Tileset.GOLDKEY)) {
+                StdDraw.picture(79, 35, "aesthetic/gold key.jpg");
+            }
+        }
     }
 
     private void mouseHover() {
@@ -350,9 +374,60 @@ public class World {
         }
 
     }
+    private void interact() {
+        for (Key key : keyList) {
+            if (interactHelper(Key.bronzeX, Key.bronzeY)) {
+                key.interact();
+            } else if (interactHelper(Key.silverX, Key.silverY)) {
+                key.interact();
+            } else if (interactHelper(Key.goldX, Key.goldY)) {
+                key.interact();
+            }
+        }
+    }
+    private boolean interactHelper(int x, int y) {
+        return Math.abs(charPosX - x) <= 1 && Math.abs(charPosY - y) <= 1;
+    }
 
     private int gridToInteger(int x, int y) {
         return x + (y * screenWidth);
+    }
+    private class Key {
+        private int x;
+        private int y;
+        private static int bronzeX;
+        private static int bronzeY;
+        private static int silverX;
+        private static int silverY;
+        private static int goldX;
+        private static int goldY;
+        private TETile key;
+        private boolean collected;
+        private boolean realKey;
+
+        public Key(int x, int y, TETile typeKey) {
+            this.x = x;
+            this.y = y;
+            if (typeKey.equals(Tileset.BRONZEKEY)) {
+                bronzeX = x;
+                bronzeY = y;
+            } else if (typeKey.equals(Tileset.SILVERKEY)) {
+                silverX = x;
+                silverY = y;
+            } else {
+                goldX = x;
+                goldY = y;
+            }
+            this.key = typeKey;
+            this.collected = false;
+        }
+
+        private void interact() {
+            this.collected = true;
+            world[x][y] = floor;
+            System.out.println("key collected");
+        }
+
     }
 
     private class Room {

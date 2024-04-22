@@ -24,12 +24,21 @@ public class Tileset {
             "wall", "aesthetic/stonewall.jpg", 1);
     public static final TETile WALL = new TETile('#', new Color(216, 128, 128), Color.darkGray,
             "wall", 1);
-    public static final TETile BACKROOMS = new TETile('#', new Color(216, 128, 128), Color.darkGray,
+    public static final TETile BACKROOMS = new TETile('#', new Color(232, 241, 95), Color.darkGray,
             "wall", "aesthetic/backrooms.jpg" ,  1);
     //Floors
     public static final TETile CASTLEFLOOR = new TETile('·', new Color(128, 128, 255), Color.black, "floor", 2);
     public static final TETile BACKROOMSFLOOR = new TETile('·', new Color(255, 255, 255), Color.black, "floor", 2);
     public static final TETile FLOOR = new TETile('·', new Color(128, 216, 128), Color.black, "floor", 2);
+    //Keys
+    public static final TETile GOLDKEY = new TETile('$', new Color(245, 233, 10), Color.black,
+            "key", "aesthetic/gold key.jpg" , 13);
+    public static final TETile SILVERKEY = new TETile('$', new Color(170, 238, 227), Color.black,
+            "key", "aesthetic/silver key.jpg" , 13);
+    public static final TETile BRONZEKEY = new TETile('$', new Color(199, 34, 34, 107),
+            Color.black, "key", "aesthetic/bronze key.jpg" , 13);
+
+    //
     public static final TETile NOTHING = new TETile(' ', Color.black, Color.black, "nothing", 3);
     public static final TETile GRASS = new TETile('"', Color.green, Color.black, "grass", 4);
     public static final TETile WATER = new TETile('≈', Color.blue, Color.black, "water", 5);
