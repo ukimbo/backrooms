@@ -1,6 +1,5 @@
 package core;
 
-import edu.princeton.cs.algs4.StdDraw;
 import tileengine.TETile;
 import tileengine.Tileset;
 
@@ -10,7 +9,7 @@ public class AutograderBuddy {
      * Simulates a game, but doesn't render anything or call any StdDraw
      * methods. Instead, returns the world that would result if the input string
      * had been typed on the keyboard.
-     *
+     * <p>
      * Recall that strings ending in ":q" should cause the game to quit and
      * save. To "quit" in this method, save the game to a file, then just return
      * the TETile[][]. Do not call System.exit(0) in this method.
@@ -64,6 +63,7 @@ public class AutograderBuddy {
         return myWorld.getWorld();
 
     }
+
     public static long parseSeed(String input) {
         if (input.equals("") || input.equals("ns")) {
             return System.currentTimeMillis();

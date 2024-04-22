@@ -1,4 +1,3 @@
-
 package core;
 
 import edu.princeton.cs.algs4.In;
@@ -15,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class World {
+    StringBuilder saveCheck = new StringBuilder();
     // build your own world!
     private long seed;
     private Random random;
@@ -26,11 +26,8 @@ public class World {
     private TETile[][] world;
     private int charPosX;
     private int charPosY;
-
     private boolean placeChar;
-
     private boolean gameStatus;
-    StringBuilder saveCheck = new StringBuilder();
 
     public World(int screenWidth, int screenHeight, String seed, boolean placeChar) {
         this.screenWidth = screenWidth;
@@ -47,11 +44,42 @@ public class World {
         }
         this.randomSquare();
         this.placeHalls();
-        if (placeChar){
+        if (placeChar) {
             this.placeAvatarRandom();
         }
         this.gameStatus = true;
 
+    }
+
+    public static String getInputSeed() {
+        StringBuilder seedBuilder = new StringBuilder();
+        seedBuilder.append("n");
+        StdDraw.clear(StdDraw.BLACK);
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.text(40, 20, "Enter Seed: (Press 'S' to Start)");
+
+        StdDraw.show();
+        boolean enterSeed = true;
+        int count = 3;
+        while (enterSeed) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char ch = StdDraw.nextKeyTyped();
+                if (Character.isDigit(ch)) {
+                    count += 1;
+                    seedBuilder.append(ch);
+                    StdDraw.text(33 + count, 18, String.valueOf(ch));
+                    StdDraw.show();
+                } else if (ch == 's' || ch == 'S') {
+                    if (seedBuilder.length() > 0) {
+                        enterSeed = false;
+                    }
+                }
+            }
+
+            StdDraw.pause(50);
+        }
+        seedBuilder.append("s");
+        return seedBuilder.toString();
     }
 
     public TETile[][] getWorld() {
@@ -65,7 +93,6 @@ public class World {
         charPosX = spawnRoom.centerX;
         charPosY = spawnRoom.centerY;
     }
-
 
     public void randomSquare() {
         boolean placed = false;
@@ -113,35 +140,35 @@ public class World {
         while (gameStatus) {
             ter.renderFrame(getWorld());
             updateBoard();
-            HUD();
+            hud();
             StdDraw.show();
             StdDraw.pause(20);  // Adjust based on desired frame rate
         }
         System.out.println("Game Over");
     }
+
     private void updateBoard() {
         StringBuilder colonQ = new StringBuilder(":Q");
         while (StdDraw.hasNextKeyTyped()) {
             char key = StdDraw.nextKeyTyped();
             if (key == 'a') {
-                tryMove( - 1, 0);
+                tryMove(-1, 0);
             } else if (key == 'd') {
-                tryMove( 1, 0);
+                tryMove(1, 0);
             } else if (key == 's') {
-                tryMove(0, - 1);
+                tryMove(0, -1);
             } else if (key == 'w') {
-                tryMove(0,  1);
+                tryMove(0, 1);
             } else if (key == 'l') {
                 loadGame("save.txt");
             } else if (key == ':') {
                 saveCheck.append(":");
                 System.out.println(saveCheck);
-//                 char key2 = StdDraw.nextKeyTyped();
-            }else if (key == 'Q') {
+            } else if (key == 'Q') {
                 saveCheck.append("Q");
                 System.out.println(saveCheck);
 
-                if(saveCheck.compareTo(colonQ) == 0){
+                if (saveCheck.compareTo(colonQ) == 0) {
                     System.out.println(saveCheck);
                     saveGame("save.txt");
                     gameStatus = false;
@@ -187,7 +214,7 @@ public class World {
             System.out.println("Save file does not exist");
             return;
         }
-        if (in.hasNextChar()){
+        if (in.hasNextChar()) {
             seed = in.readLong();
             charPosX = in.readInt();
             charPosY = in.readInt();
@@ -218,17 +245,16 @@ public class World {
                     World newGame = new World(80, 45, getSeed, true);
                     newGame.runGame();
                     break;
-                }
-                else if (choice == 'l') {
+                } else if (choice == 'l') {
                     World newGame;
                     Long getSeed = loadSeed();
-                    if (getSeed == null){
+                    if (getSeed == null) {
                         System.out.println("Can't Load because there is nothing saved!");
                     } else {
                         loopMenu = false;
-                         newGame = new World(80, 45, "n" + getSeed + "s", false);
-                         newGame.loadGame("save.txt");
-                         newGame.runGame();
+                        newGame = new World(80, 45, "n" + getSeed + "s", false);
+                        newGame.loadGame("save.txt");
+                        newGame.runGame();
                         break;
                     }
                 }
@@ -236,6 +262,7 @@ public class World {
             StdDraw.pause(100);
         }
     }
+
     public Long loadSeed() {
         In in = new In("save.txt");
 
@@ -243,43 +270,14 @@ public class World {
             System.out.println("Save file does not exist");
             return null;
         }
-        if (in.hasNextChar()){
+        if (in.hasNextChar()) {
             seed = in.readLong();
             return seed;
         }
-       return null;
+        return null;
     }
-    public static String getInputSeed() {
-        StringBuilder seedBuilder = new StringBuilder();
-        seedBuilder.append("n");
-        StdDraw.clear(StdDraw.BLACK);
-        StdDraw.setPenColor(StdDraw.WHITE);
-        StdDraw.text(40, 20, "Enter Seed: (Press 'S' to Start)");
 
-        StdDraw.show();
-        boolean enterSeed = true;
-        int count = 3;
-        while (enterSeed) {
-            if (StdDraw.hasNextKeyTyped()) {
-                char ch = StdDraw.nextKeyTyped();
-                if (Character.isDigit(ch)) {
-                    count += 1;
-                    seedBuilder.append(ch);
-                    StdDraw.text(33 + count,18 , String.valueOf(ch));
-                    StdDraw.show();
-                } else if (ch == 's' || ch == 'S') {
-                    if (seedBuilder.length() > 0) {
-                        enterSeed = false;
-                    }
-                }
-            }
-
-            StdDraw.pause(50);
-        }
-        seedBuilder.append("s");
-        return seedBuilder.toString();
-    }
-    private void HUD() {
+    private void hud() {
         StdDraw.setPenColor(StdDraw.WHITE);
         StringBuilder currPos = new StringBuilder("Current Position: (");
         currPos.append(charPosX).append(", ").append(charPosY).append(")");
@@ -290,6 +288,7 @@ public class World {
         StdDraw.textRight(79, 46, formattedDateTime);
         mouseHover();
     }
+
     private void mouseHover() {
         int mouseX = (int) StdDraw.mouseX();
         int mouseY = (int) StdDraw.mouseY();
@@ -301,6 +300,9 @@ public class World {
 
     }
 
+    private int gridToInteger(int x, int y) {
+        return x + (y * screenWidth);
+    }
 
     private class Room {
         private int leftX;
@@ -314,6 +316,7 @@ public class World {
         private int length;
         private int height;
         private int id;
+
         public Room(int xStart, int yStart, int length, int height) {
             leftX = xStart;
             rightX = xStart + length - 1;
@@ -346,6 +349,7 @@ public class World {
                 world[rightX][y] = Tileset.WALL;
             }
         }
+
         private boolean overlaps() {
             for (int x = leftX; x <= rightX; x++) {
                 for (int y = bottomY; y <= topY; y++) {
@@ -356,6 +360,7 @@ public class World {
             }
             return false;
         }
+
         private void connectRoomsRandom(Room otherRoom) {
             this.randomX = RandomUtils.uniform(random, this.leftX + 1, this.rightX - 1);
             this.randomY = RandomUtils.uniform(random, this.bottomY + 1, this.topY - 1);
@@ -370,10 +375,12 @@ public class World {
                 drawLShapeHallway(this.randomX, otherRoom.randomX, this.randomY, otherRoom.centerY);
             }
         }
+
         private void drawLShapeHallway(int xStart, int xEnd, int yStart, int yEnd) {
             drawHorizontalHallway(xStart, xEnd, yStart);
             drawVerticalHallway(yStart, yEnd, xEnd);
         }
+
         private void drawHorizontalHallway(int xStart, int xEnd, int yStart) {
             int xOrigin;
             int xDestination;
@@ -420,6 +427,7 @@ public class World {
 
             }
         }
+
         private void checkConnectionsDuringHallwayGeneration(int x, int y) {
             int gridToInt = gridToInteger(x, y);
             Room otherRoom = roomGridPositionMap.get(gridToInt);
@@ -427,13 +435,11 @@ public class World {
                 roomConnections.union(this.id, otherRoom.id);
             }
         }
+
         private void connectRoomsCenter(Room otherRoom) {
             drawHorizontalHallway(this.centerX, otherRoom.centerX, centerY);
             drawVerticalHallway(this.centerY, otherRoom.centerY, otherRoom.centerX);
         }
 
-    }
-    private int gridToInteger(int x, int y) {
-        return x + (y * screenWidth);
     }
 }
