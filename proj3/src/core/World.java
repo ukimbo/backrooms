@@ -28,6 +28,9 @@ public class World {
     private int charPosY;
     private boolean placeChar;
     private boolean gameStatus;
+    private static TETile wall = Tileset.BACKROOMS;
+    private TETile floor = Tileset.BACKROOMSFLOOR;
+    private TETile avatar = Tileset.AVATAR;
 
     public World(int screenWidth, int screenHeight, String seed, boolean placeChar) {
         this.screenWidth = screenWidth;
@@ -51,37 +54,6 @@ public class World {
 
     }
 
-    public static String getInputSeed() {
-        StringBuilder seedBuilder = new StringBuilder();
-        seedBuilder.append("n");
-        StdDraw.clear(StdDraw.BLACK);
-        StdDraw.setPenColor(StdDraw.WHITE);
-        StdDraw.text(40, 20, "Enter Seed: (Press 'S' to Start)");
-
-        StdDraw.show();
-        boolean enterSeed = true;
-        int count = 3;
-        while (enterSeed) {
-            if (StdDraw.hasNextKeyTyped()) {
-                char ch = StdDraw.nextKeyTyped();
-                if (Character.isDigit(ch)) {
-                    count += 1;
-                    seedBuilder.append(ch);
-                    StdDraw.text(33 + count, 18, String.valueOf(ch));
-                    StdDraw.show();
-                } else if (ch == 's' || ch == 'S') {
-                    if (seedBuilder.length() > 0) {
-                        enterSeed = false;
-                    }
-                }
-            }
-
-            StdDraw.pause(50);
-        }
-        seedBuilder.append("s");
-        return seedBuilder.toString();
-    }
-
     public TETile[][] getWorld() {
         return world;
     }
@@ -89,7 +61,7 @@ public class World {
     public void placeAvatarRandom() {
         int roomNumber = RandomUtils.uniform(random, 0, rooms.size() - 1);
         Room spawnRoom = rooms.get(roomNumber);
-        world[spawnRoom.centerX][spawnRoom.centerY] = Tileset.AVATAR;
+        world[spawnRoom.centerX][spawnRoom.centerY] = this.avatar;
         charPosX = spawnRoom.centerX;
         charPosY = spawnRoom.centerY;
     }
@@ -183,10 +155,10 @@ public class World {
         int newY = charPosY + Y;
 
         if (canMove(newX, newY)) {
-            world[charPosX][charPosY] = Tileset.FLOOR; // Set the old position back to floor
+            world[charPosX][charPosY] = floor; // Set the old position back to floor
             charPosX = newX;
             charPosY = newY;
-            world[charPosX][charPosY] = Tileset.AVATAR; // Move avatar to new position
+            world[charPosX][charPosY] = avatar; // Move avatar to new position
             //System.out.println("Went from " + charPosX + " " + charPosY + " to " + newX + " " + newY);
 
         } //else {
@@ -198,7 +170,7 @@ public class World {
     }
 
     private boolean canMove(int x, int y) {
-        return (x >= 0 && x < screenWidth && y >= 0 && y < screenHeight) && (world[x][y] == Tileset.FLOOR);
+        return (x >= 0 && x < screenWidth && y >= 0 && y < screenHeight) && (world[x][y] == floor);
     }
 
     public void saveGame(String filename) {
@@ -219,9 +191,23 @@ public class World {
             charPosX = in.readInt();
             charPosY = in.readInt();
             world = new World(screenWidth, screenHeight, "n" + seed + "s", false).world;
-            world[charPosX][charPosY] = Tileset.AVATAR;
+            world[charPosX][charPosY] = avatar;
             in.close();
         }
+    }
+
+    public Long loadSeed() {
+        In in = new In("save.txt");
+
+        if (!in.exists()) {
+            System.out.println("Save file does not exist");
+            return null;
+        }
+        if (in.hasNextChar()) {
+            seed = in.readLong();
+            return seed;
+        }
+        return null;
     }
 
     public void mainMenu() {
@@ -230,10 +216,11 @@ public class World {
         while (loopMenu) {
             StdDraw.clear(StdDraw.BLACK);
             StdDraw.setPenColor(StdDraw.WHITE);
-
-            StdDraw.text(40, 30, "New Game (Press 'N')");
-            StdDraw.text(40, 20, "Load Game (Press 'L')");
-            StdDraw.text(40, 10, "Quit (Press 'Q')");
+            StdDraw.picture(40, 37, "aesthetic/title.jpg");
+            StdDraw.picture(40, 10, "aesthetic/q.png", 40, 3);
+            StdDraw.picture(40, 15, "aesthetic/theme select.png", 40, 3);
+            StdDraw.picture(40, 20, "aesthetic/load.png", 40, 3);
+            StdDraw.picture(40, 25, "aesthetic/new.png", 40, 3);
             StdDraw.show();
 
             // Check for user input
@@ -257,25 +244,89 @@ public class World {
                         newGame.runGame();
                         break;
                     }
+                } else if (choice == 't') {
+                    themeMenu();
+                } else if (choice == 'q') {
+                    loopMenu = false;
+                    break;
                 }
             }
             StdDraw.pause(100);
         }
     }
 
-    public Long loadSeed() {
-        In in = new In("save.txt");
+    public String getInputSeed() {
+        StringBuilder seedBuilder = new StringBuilder();
+        seedBuilder.append("n");
+        StdDraw.clear(StdDraw.BLACK);
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.text(40, 20, "Enter Seed: (Press 'S' to Start)");
+        StdDraw.text(40, 5, "Press 'B' to go back");
+        StdDraw.show();
+        boolean enterSeed = true;
+        int count = 3;
+        while (enterSeed) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char ch = StdDraw.nextKeyTyped();
+                if (Character.isDigit(ch)) {
+                    count += 1;
+                    seedBuilder.append(ch);
+                    StdDraw.text(33 + count, 18, String.valueOf(ch));
+                    StdDraw.show();
+                } else if (ch == 's' || ch == 'S') {
+                    if (seedBuilder.length() > 0) {
+                        enterSeed = false;
+                    }
+                } else if (ch == 'b' || ch == 'B') {
+                    enterSeed = false;
+                    this.mainMenu();
+                    break;
+                }
+            }
 
-        if (!in.exists()) {
-            System.out.println("Save file does not exist");
-            return null;
+            StdDraw.pause(50);
         }
-        if (in.hasNextChar()) {
-            seed = in.readLong();
-            return seed;
-        }
-        return null;
+        seedBuilder.append("s");
+        return seedBuilder.toString();
     }
+
+    public void themeMenu() {
+        StdDraw.clear(StdDraw.BLACK);
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.text(40, 20, "Choose Theme:");
+        StdDraw.text(20, 15, "Backrooms: Press '1'");
+        StdDraw.text(40, 15, "Default: Press '2'");
+        StdDraw.text(60, 15, "Castle: Press '3'");
+        StdDraw.text(40, 5, "Press 'B' to go back");
+        StdDraw.picture(20, 25, "aesthetic/backrooms preview.png");
+        StdDraw.picture(40, 25, "aesthetic/default preview.png");
+        StdDraw.picture(60, 25, "aesthetic/castle preview.png");
+        StdDraw.show();
+        boolean chooseTheme = true;
+        int count = 3;
+        while (chooseTheme) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char ch = StdDraw.nextKeyTyped();
+                if (ch == '1') {
+                    this.wall = Tileset.BACKROOMS;
+                    this.floor = Tileset.BACKROOMSFLOOR;
+                } else if (ch == '2') {
+                    this.wall = Tileset.WALL;
+                    this.floor = Tileset.FLOOR;
+                } else if (ch == '3') {
+                    this.wall = Tileset.CASTLE;
+                    this.floor = Tileset.CASTLEFLOOR;
+                } else if (ch == 'b' || ch == 'B') {
+                    chooseTheme = false;
+                    this.mainMenu();
+                }
+            }
+
+            StdDraw.pause(50);
+        }
+    }
+
+
 
     private void hud() {
         StdDraw.setPenColor(StdDraw.WHITE);
@@ -335,18 +386,18 @@ public class World {
             //Floors
             for (int x = leftX + 1; x < rightX; x++) {
                 for (int y = bottomY + 1; y < topY; y++) {
-                    world[x][y] = Tileset.FLOOR;
+                    world[x][y] = floor;
                     roomGridPositionMap.put(gridToInteger(x, y), this);
                 }
             }
             //Walls
             for (int x = leftX; x <= rightX; x++) {
-                world[x][bottomY] = Tileset.WALL;
-                world[x][topY] = Tileset.WALL;
+                world[x][bottomY] = wall;
+                world[x][topY] = wall;
             }
             for (int y = bottomY; y <= topY; y++) {
-                world[leftX][y] = Tileset.WALL;
-                world[rightX][y] = Tileset.WALL;
+                world[leftX][y] = wall;
+                world[rightX][y] = wall;
             }
         }
 
@@ -392,14 +443,14 @@ public class World {
                 xDestination = xEnd;
             }
             for (int x = xOrigin; x <= xDestination; x++) {
-                world[x][yStart] = Tileset.FLOOR;
+                world[x][yStart] = floor;
                 checkConnectionsDuringHallwayGeneration(x, yStart);
 
                 if (world[x][yStart - 1].equals(Tileset.NOTHING)) {
-                    world[x][yStart - 1] = Tileset.WALL;
+                    world[x][yStart - 1] = wall;
                 }
                 if (world[x][yStart + 1].equals(Tileset.NOTHING)) {
-                    world[x][yStart + 1] = Tileset.WALL;
+                    world[x][yStart + 1] = wall;
                 }
             }
         }
@@ -415,14 +466,14 @@ public class World {
                 yDestination = yEnd;
             }
             for (int y = yOrigin; y <= yDestination; y++) {
-                world[xStart][y] = Tileset.FLOOR;
+                world[xStart][y] = floor;
                 checkConnectionsDuringHallwayGeneration(xStart, y);
                 if (world[xStart - 1][y].equals(Tileset.NOTHING)) {
-                    world[xStart - 1][y] = Tileset.WALL;
+                    world[xStart - 1][y] = wall;
 
                 }
                 if (world[xStart + 1][y].equals(Tileset.NOTHING)) {
-                    world[xStart + 1][y] = Tileset.WALL;
+                    world[xStart + 1][y] = wall;
                 }
 
             }
