@@ -31,7 +31,7 @@ public class World {
     private static TETile wall = Tileset.BACKROOMS;
     private TETile floor = Tileset.BACKROOMSFLOOR;
     private TETile avatar = Tileset.AVATAR;
-    private Set<Key> keyList = new HashSet<>();
+    private List<Key> keyList = new ArrayList<>();
 
     public World(int screenWidth, int screenHeight, String seed, boolean placeChar) {
         this.screenWidth = screenWidth;
@@ -117,6 +117,7 @@ public class World {
             int roomNumber = RandomUtils.uniform(random, 0, rooms.size() - 1);
             Room spawnRoom = rooms.get(roomNumber);
             Key currKey = new Key(spawnRoom.centerX, spawnRoom.centerY, keyTypes.get(i));
+            keyList.add(currKey);
             world[spawnRoom.centerX][spawnRoom.centerY] = currKey.key;
         }
     }
@@ -149,6 +150,7 @@ public class World {
                 loadGame("save.txt");
             } else if (key == 'i') {
                 interact();
+                System.out.println("pressed i");
             } else if (key == ':') {
                 saveCheck.append(":");
                 System.out.println(saveCheck);
@@ -353,14 +355,14 @@ public class World {
     }
 
     private void keyHUD() {
-        for (Key key: keyList) {
-            if (key.collected && key.key.equals(Tileset.BRONZEKEY)) {
-                StdDraw.picture(75, 35, "aesthetic/bronze key.jpg");
-            } else if (key.collected && key.key.equals(Tileset.SILVERKEY)) {
-                StdDraw.picture(77, 35, "aesthetic/silver key.jpg");
-            } else if (key.collected && key.key.equals(Tileset.GOLDKEY)) {
-                StdDraw.picture(79, 35, "aesthetic/gold key.jpg");
-            }
+        if (keyList.get(0).collected) {
+            StdDraw.picture(75, 45, "aesthetic/bronze key.jpg", 1, 1);
+        }
+        if (keyList.get(1).collected) {
+            StdDraw.picture(77, 45, "aesthetic/silver key.jpg", 1, 1);
+        }
+        if (keyList.get(2).collected) {
+            StdDraw.picture(79, 45, "aesthetic/gold key.jpg", 1, 1);
         }
     }
 
@@ -376,17 +378,23 @@ public class World {
     }
     private void interact() {
         for (Key key : keyList) {
-            if (interactHelper(Key.bronzeX, Key.bronzeY)) {
-                key.interact();
-            } else if (interactHelper(Key.silverX, Key.silverY)) {
-                key.interact();
-            } else if (interactHelper(Key.goldX, Key.goldY)) {
+            if (interactHelper(key.x, key.y)) {
                 key.interact();
             }
         }
     }
     private boolean interactHelper(int x, int y) {
-        return Math.abs(charPosX - x) <= 1 && Math.abs(charPosY - y) <= 1;
+        if (charPosX - 1 == x && charPosY == y) {
+            return true;
+        } else if (charPosX + 1 == x && charPosY == y) {
+            return true;
+        } else if (charPosX == x && charPosY + 1 == y) {
+            return true;
+        } else if (charPosX == x && charPosY - 1 == y) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private int gridToInteger(int x, int y) {
@@ -395,12 +403,6 @@ public class World {
     private class Key {
         private int x;
         private int y;
-        private static int bronzeX;
-        private static int bronzeY;
-        private static int silverX;
-        private static int silverY;
-        private static int goldX;
-        private static int goldY;
         private TETile key;
         private boolean collected;
         private boolean realKey;
@@ -408,16 +410,6 @@ public class World {
         public Key(int x, int y, TETile typeKey) {
             this.x = x;
             this.y = y;
-            if (typeKey.equals(Tileset.BRONZEKEY)) {
-                bronzeX = x;
-                bronzeY = y;
-            } else if (typeKey.equals(Tileset.SILVERKEY)) {
-                silverX = x;
-                silverY = y;
-            } else {
-                goldX = x;
-                goldY = y;
-            }
             this.key = typeKey;
             this.collected = false;
         }
