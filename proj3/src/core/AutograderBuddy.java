@@ -26,7 +26,8 @@ public class AutograderBuddy {
             i++;
             StringBuilder seedSb = new StringBuilder();
             while (Character.isDigit(input.charAt(i))) {
-                seedSb.append(input.charAt(i++));
+                seedSb.append(input.charAt(i));
+                i++;
             }
             if (input.charAt(i) == 'S') {
                 i++;
