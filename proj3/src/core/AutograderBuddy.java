@@ -1,5 +1,6 @@
 package core;
 
+import edu.princeton.cs.algs4.StdDraw;
 import tileengine.TETile;
 import tileengine.Tileset;
 
@@ -34,11 +35,34 @@ public class AutograderBuddy {
             }
         } else if (input.charAt(i) == 'L') {
             i++;
-            myWorld.runGame();
+            myWorld.loadGame("save.txt");
         }
 
+        for (; i < input.length(); i++) {
+            char command = input.charAt(i);
+            if (command == ':') {
+                if (i + 1 < input.length() && input.charAt(i + 1) == 'Q') {
+                    myWorld.saveGame("save.txt");  // Ensure correct handling of save filename/path
+                    break;
+                }
+            } else {
+                if (command == 'A') {
+                    myWorld.tryMove(-1, 0);
+                } else if (command == 'B') {
+                    myWorld.tryMove(1, 0);
+                } else if (command == 'S') {
+                    myWorld.tryMove(0, -1);
+                } else if (command == 'W') {
+                    myWorld.tryMove(0, 1);
+                } else if (command == 'L') {
+                    myWorld.loadGame("save.txt");
+                }
+            }
 
+
+        }
         return myWorld.getWorld();
+
     }
     public static long parseSeed(String input) {
         if (input.equals("") || input.equals("ns")) {
