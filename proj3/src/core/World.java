@@ -213,7 +213,9 @@ public class World {
         }
         if (interactHelper(doorPosX, doorPosY) && Key.realKeyCollected) {
             world[doorPosX][doorPosY] = Tileset.UNLOCKED_DOOR;
+            Key.realKeyCollected = false;
         }
+        interactDoor();
     }
     private boolean interactHelper(int x, int y) {
         if (charPosX - 1 == x && charPosY == y) {
@@ -226,6 +228,14 @@ public class World {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void interactDoor() {
+        if (charPosX == doorPosX && charPosY == doorPosY) {
+            this.gameStatus = false;
+            World newGame = new World(80, 45, "ns", true);
+            newGame.runGame();
         }
     }
 
@@ -425,7 +435,6 @@ public class World {
                 StdDraw.textLeft(1, 45, "Tile: " + world[mouseX][mouseY].description());
             }
         }
-
     }
 
     private int gridToInteger(int x, int y) {
