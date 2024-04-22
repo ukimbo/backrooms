@@ -32,7 +32,7 @@ public class World {
     private boolean placeChar;
     private boolean gameStatus;
     private static TETile wall = Tileset.BACKROOMS;
-    private TETile floor = Tileset.BACKROOMSFLOOR;
+    private static TETile floor = Tileset.BACKROOMSFLOOR;
     private TETile avatar = Tileset.AVATAR;
     private List<Key> keyList = new ArrayList<>();
 
@@ -364,14 +364,14 @@ public class World {
             if (StdDraw.hasNextKeyTyped()) {
                 char ch = StdDraw.nextKeyTyped();
                 if (ch == '1') {
-                    this.wall = Tileset.BACKROOMS;
-                    this.floor = Tileset.BACKROOMSFLOOR;
+                    wall = Tileset.BACKROOMS;
+                    floor = Tileset.BACKROOMSFLOOR;
                 } else if (ch == '2') {
-                    this.wall = Tileset.WALL;
-                    this.floor = Tileset.FLOOR;
+                    wall = Tileset.WALL;
+                    floor = Tileset.FLOOR;
                 } else if (ch == '3') {
-                    this.wall = Tileset.CASTLE;
-                    this.floor = Tileset.CASTLEFLOOR;
+                    wall = Tileset.CASTLE;
+                    floor = Tileset.CASTLEFLOOR;
                 } else if (ch == 'b' || ch == 'B') {
                     chooseTheme = false;
                     this.mainMenu();
