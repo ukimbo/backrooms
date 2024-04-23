@@ -141,7 +141,7 @@ public class World {
             updateBoard();
             hud();
             StdDraw.show();
-            StdDraw.pause(20);  // Adjust based on desired frame rate
+            StdDraw.pause(33);  // Adjust based on desired frame rate
         }
         System.out.println("Game Over");
     }
@@ -284,11 +284,11 @@ public class World {
         while (loopMenu) {
             StdDraw.clear(StdDraw.BLACK);
             StdDraw.setPenColor(StdDraw.WHITE);
-            StdDraw.picture(40, 37, "proj3/aesthetic/title.jpg");
-            StdDraw.picture(40, 10, "proj3/aesthetic/q.png", 40, 3);
-            StdDraw.picture(40, 15, "proj3/aesthetic/theme select.png", 40, 3);
-            StdDraw.picture(40, 20, "proj3/aesthetic/load.png", 40, 3);
-            StdDraw.picture(40, 25, "proj3/aesthetic/new.png", 40, 3);
+            StdDraw.picture(40, 37, "aesthetic/title.jpg");
+            StdDraw.picture(40, 10, "aesthetic/q.png", 40, 3);
+            StdDraw.picture(40, 15, "aesthetic/theme select.png", 40, 3);
+            StdDraw.picture(40, 20, "aesthetic/load.png", 40, 3);
+            StdDraw.picture(40, 25, "aesthetic/new.png", 40, 3);
             StdDraw.show();
 
             // Check for user input
@@ -367,11 +367,11 @@ public class World {
         StdDraw.text(40, 30, "Default: Press '2'");
         StdDraw.text(60, 30, "Castle: Press '3'");
         StdDraw.text(40, 5, "Press 'B' to go back");
-        StdDraw.picture(20, 35, "proj3/aesthetic/backrooms preview.png");
-        StdDraw.picture(40, 35, "proj3/aesthetic/default preview.png");
-        StdDraw.picture(60, 35, "proj3/aesthetic/castle preview.png");
+        StdDraw.picture(20, 35, "aesthetic/backrooms preview.png");
+        StdDraw.picture(40, 35, "aesthetic/default preview.png");
+        StdDraw.picture(60, 35, "aesthetic/castle preview.png");
         StdDraw.text(40, 25, "Choose Avatar:");
-        StdDraw.picture(40, 20, "proj3/aesthetic/green.jpg");
+        StdDraw.picture(40, 20, "aesthetic/green.jpg");
         StdDraw.show();
         boolean chooseTheme = true;
         int count = 3;
@@ -443,13 +443,13 @@ public class World {
     private void keyHUD() {
         StdDraw.textRight(74, 45, "Keys Collected: ");
         if (keyList.get(0).collected) {
-            StdDraw.picture(75, 45, "proj3/aesthetic/bronze key.jpg", 1, 1);
+            StdDraw.picture(75, 45, "aesthetic/bronze key.jpg", 1, 1);
         }
         if (keyList.get(1).collected) {
-            StdDraw.picture(77, 45, "proj3/aesthetic/silver key.jpg", 1, 1);
+            StdDraw.picture(77, 45, "aesthetic/silver key.jpg", 1, 1);
         }
         if (keyList.get(2).collected) {
-            StdDraw.picture(79, 45, "proj3/aesthetic/gold key.jpg", 1, 1);
+            StdDraw.picture(79, 45, "aesthetic/gold key.jpg", 1, 1);
         }
     }
 
