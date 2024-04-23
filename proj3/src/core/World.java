@@ -58,8 +58,7 @@ public class World {
         }
         this.placeKeys();
         this.gameStatus = true;
-        TERenderer ter = new TERenderer();
-        ter.initialize(screenWidth, screenHeight + 3);
+
     }
 
     public TETile[][] getWorld() {
