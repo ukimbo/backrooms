@@ -289,11 +289,11 @@ public class World {
         while (loopMenu) {
             StdDraw.clear(StdDraw.BLACK);
             StdDraw.setPenColor(StdDraw.WHITE);
-            StdDraw.picture(40, 37, "proj3/aesthetic/title.jpg");
-            StdDraw.picture(40, 10, "proj3/aesthetic/q.png", 40, 3);
-            StdDraw.picture(40, 15, "proj3/aesthetic/theme select.png", 40, 3);
-            StdDraw.picture(40, 20, "proj3/aesthetic/load.png", 40, 3);
-            StdDraw.picture(40, 25, "proj3/aesthetic/new.png", 40, 3);
+            StdDraw.picture(40, 37, "aesthetic/title.jpg");
+            StdDraw.picture(40, 10, "aesthetic/q.png", 40, 3);
+            StdDraw.picture(40, 15, "aesthetic/theme select.png", 40, 3);
+            StdDraw.picture(40, 20, "aesthetic/load.png", 40, 3);
+            StdDraw.picture(40, 25, "aesthetic/new.png", 40, 3);
             StdDraw.show();
 
             // Check for user input
@@ -448,13 +448,13 @@ public class World {
     private void keyHUD() {
         StdDraw.textRight(74, 45, "Keys Collected: ");
         if (keyList.get(0).collected) {
-            StdDraw.picture(75, 45, "proj3/aesthetic/bronze key.jpg", 1, 1);
+            StdDraw.picture(75, 45, "aesthetic/bronze key.jpg", 1, 1);
         }
         if (keyList.get(1).collected) {
-            StdDraw.picture(77, 45, "proj3/aesthetic/silver key.jpg", 1, 1);
+            StdDraw.picture(77, 45, "aesthetic/silver key.jpg", 1, 1);
         }
         if (keyList.get(2).collected) {
-            StdDraw.picture(79, 45, "proj3/aesthetic/gold key.jpg", 1, 1);
+            StdDraw.picture(79, 45, "aesthetic/gold key.jpg", 1, 1);
         }
     }
 
